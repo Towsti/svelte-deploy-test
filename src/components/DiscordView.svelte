@@ -42,7 +42,8 @@
 
 </script>
 
-<div class='w-full h-full rounded-lg border-2 border-slate-900 overflow-auto pa2 discord-view'>
+<div class='overflow-auto w-full h-full rounded-lg border-2 border-slate-900 scrollbar-thin scrollbar-thumb-slate-900'>
+<div class='discord-view'>
     <div class='h-full flex-vertical whitney theme-dark'>
         <div class='chat flex-vertical flex-spacer'>
             <div class='content flex-spacer flex-horizontal'>
@@ -66,4 +67,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>

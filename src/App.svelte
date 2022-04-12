@@ -37,7 +37,7 @@
 		    	</div>
 			</div>
 			<div class="flex-grow p-2">
-				<textarea id="input" bind:value={text} on:input={setCursor} on:click={setCursor} on:keyup={setCursor} class="outline-none rounded-lg h-full p-3 w-full border-2 border-slate-900 bg-slate-700 text-slate-50"/>
+				<textarea id="input" bind:value={text} on:input={setCursor} on:click={setCursor} on:keyup={setCursor} class="resize-none outline-none rounded-lg h-full p-3 w-full border-2 border-slate-900 bg-slate-700 text-slate-50 scrollbar-thin scrollbar-thumb-slate-900"/>
 			</div>
 		</div>		
 		<div class="h-screen p-2">
