@@ -1,6 +1,6 @@
 <script>
     import { toHTML } from 'discord-markdown';
-    import { channels, users } from './../constants/discord'
+    import { channels, users } from './../constants/discord';
 
     export let message = Object();
 
