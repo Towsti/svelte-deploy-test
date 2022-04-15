@@ -291,3 +291,65 @@ __**Changes to Style Guide**__
 }
 .embed:json
 .pin:delete`;
+
+
+export const defaultEmbed = `{
+    "embed": {
+      "title": "Table of Contents",
+      "color": 39423,
+      "fields": [
+        {
+          "name": "__Introduction__",
+          "value": "[Link]($linkmsg_introduction$)",
+          "inline": true
+        },
+        {
+          "name": "__General__",
+          "value": "[Link]($linkmsg_general$)",
+          "inline": true
+        },
+        {
+          "name": "__Embedding Images/Videos__",
+          "value": "[Link]($linkmsg_embed$)",
+          "inline": true
+        },
+        {
+          "name": "__Sections and Subsections__",
+          "value": "[Link]($linkmsg_sections$)",
+          "inline": true
+        },
+        {
+          "name": "__Lists__",
+          "value": "[Link]($linkmsg_lists$)",
+          "inline": true
+        },
+        {
+          "name": "__Rotations__",
+          "value": "[Link]($linkmsg_rotations$)",
+          "inline": true
+        },
+        {
+          "name": "__Helpful Commands__",
+          "value": "[Link]($linkmsg_help$)",
+          "inline": true
+        },
+        {
+          "name": "__Table of Contents (formatting)__",
+          "value": "[Link]($linkmsg_toc$)",
+          "inline": true
+        },
+        {
+          "name": "__Putting it all Together__",
+          "value": "[Link]($linkmsg_finish$)",
+          "inline": true
+        },
+        {
+          "name": "__Changelog__",
+          "value": "[Link]($linkmsg_change$)",
+          "inline": true
+        }
+      ]
+    }
+  }
+.embed:json
+`;

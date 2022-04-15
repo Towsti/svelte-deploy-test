@@ -24,7 +24,6 @@
 
         return contentHTML
     }
-
 </script>
 
 <div class='message-text'>
