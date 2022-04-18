@@ -7,7 +7,8 @@
     let messageFormatted;
     // $: alwaysNew = formatMessage(message);
     // $: messageFormatted = toHTML(message);
-
+    let oldMessageFormatted = '';
+    let newMessage = true;
     // function formatMessage(message) {
     //     return `${JSON.stringify(message)} - ${Math.floor(Math.random() * 100)}`;
     // }
@@ -26,33 +27,46 @@
                 content: markdownToHTML(message.content),
                 embed: undefined
             };
-    }
-
-    function toHTML(message) {
-        // if (message.content != oldMessage.content) {
-        //     oldMessage = message;
-        //     console.log("change: " + message.content);
-        // }
-
-
-        if (message.command == '.embed:json')       
-            return {
-                content: '',
-                embed: JSON.parse(message.content).embed
-            }
         
-        return {
-            content: markdownToHTML(message.content),
-            embed: undefined
-        }
+        newMessage = true;
+        
+    } else {
+        newMessage = false;
     }
+
+    // function toHTML(message) {
+    //     // if (message.content != oldMessage.content) {
+    //     //     oldMessage = message;
+    //     //     console.log("change: " + message.content);
+    //     // }
+
+
+    //     if (message.command == '.embed:json')       
+    //         return {
+    //             content: '',
+    //             embed: JSON.parse(message.content).embed
+    //         }
+        
+    //     return {
+    //         content: markdownToHTML(message.content),
+    //         embed: undefined
+    //     }
+    // }
 </script>
 
-<div class='message-text'>
+
+<!-- {#if newMessage} -->
+<div>
+<!-- {@html messageFormatted.content} -->
+{messageFormatted.content}
+</div>
+<!-- {/if} -->
+
+<!-- <div class='message-text'>
     <div class='markup'>
         {@html messageFormatted.content}
     </div>
 </div>
 {#if messageFormatted.embed}
     <Embed {...messageFormatted.embed}/>
-{/if}
+{/if} -->

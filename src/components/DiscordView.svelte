@@ -2,59 +2,9 @@
     import Message from './Message.svelte';
     import Avatar from './Avatar.svelte';
     import Bot from './Bot.svelte';
-    import { createEventDispatcher } from 'svelte';
-    import findStyleErrors from '../style';
-    import findSyntaxErrors from '../syntax';
-
-
-    // debug
-    const dispatch = createEventDispatcher();
-
-    
-
-   
 
     export let text;
-
-    $: discordMessages = getDiscordMessages(text);
-
-    function reportErrors(errors) {
-        dispatch('errors', {
-            text: errors
-        });
-    }
-
-    function reportNoErrors() {
-        dispatch('errors', {
-            text: []
-        });
-    }
-
-    function syntaxChecker(text) {
-        // dispatch('error')
-    }
-
-    function embedParser(content) {
-
-    }
-
-    function getDiscordMessages(text) {
-        // const errors = findStyleErrors(text).concat(findStyleErrors(text));
-        const errors = [...findStyleErrors(text), ...findSyntaxErrors(text)];
-
-        if (errors.length > 0) {
-            reportErrors(errors);
-            return discordMessages;
-        }
-
-        reportNoErrors();
-
-        return splitMessages(text);
-        // return [];
-    }
-
-    
-    // $: discordMessages = splitMessages(text);
+    $: discordMessages = splitMessages(text);
 
     function splitMessages(text) {
         let messages = [];
@@ -64,7 +14,7 @@
         };
         const lines = text.split('\n');
         for (const line of lines) {
-            if (message.content != '') message.content += '\n';
+            if (message.content !== '') message.content += '\n';
 
             if (line.startsWith('..')) {
                 message.content += line.substring(1);
@@ -82,9 +32,9 @@
             }
         }
 
-        if (message.content != '') messages.push(message);
+        if (message.content !== '') messages.push(message);
 
-        return messages
+        return messages;
     }
 
 </script>

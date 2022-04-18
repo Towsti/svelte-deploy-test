@@ -1,9 +1,16 @@
 <script>
 	import DiscordView from './components/DiscordView.svelte';
+	import ErrorView from './components/ErrorView.svelte';
 	import { defaultText, defaultEmbed } from './constants/defaultText';
 	// import ScrollSync from "scroll-sync";
+	import 'codemirror/lib/codemirror.css';
+	import 'codemirror/addon/edit/closebrackets';
+	import 'codemirror/addon/edit/matchbrackets';
 	import CodeMirror from 'codemirror';
 	import { onMount } from 'svelte';
+
+	import findStyleErrors from './style';
+    import findSyntaxErrors from './syntax';
 	
 	// import 'codemirror/mode/javascript/javascript';
 	// import 'codemirror/mode/markdown/markdown';
@@ -12,13 +19,14 @@
 	let editor;
 
 	onMount(()=>{
-		// editor = CodeMirror.fromTextArea(document.getElementById('input'), {
-		// 	lineNumbers: true
-		// });
+		editor = CodeMirror.fromTextArea(document.getElementById('input'), {
+			lineNumbers: true,
+			scrollbarStyle: null
+		});
 		// console.log("Editor: ", editor);
 
-		// editor.setSize(null, '100%');
-		// editor.on('change', updater);
+		editor.setSize('100%', '100%');
+		editor.on('change', updater);
 		// editor.on('cursorActivity', cursorMoved);
 
 		// const ss = new ScrollSync({
@@ -33,29 +41,34 @@
 
 	let errorMessage = 'No errors!';
 	let errorBackground = 'bg-green-400';
-	var text = defaultText;
+	let text = defaultText;
+	let validText = text;
 	let cursor = 0; 
 	
-	function formatErrorMessage(error) {
-		const line = error.line[0] === error.line[1] ? `line: ${error.line[0]}` : `lines: ${error.line.join('-')}`;
-		const errorEmoji = error.type === 'error' ? '&#x2757' : error.type;
-		return `${errorEmoji} ${line} - ${error.text}`
-	}
+	// function formatErrorMessage(error) {
+	// 	const line = error.line[0] === error.line[1] ? `line: ${error.line[0]}` : `lines: ${error.line.join('-')}`;
+	// 	const errorEmoji = error.type === 'error' ? '&#x2757' : error.type;
+	// 	return `${errorEmoji} ${line} - ${error.text}`
+	// }
 
-	function formatErrors(errors) {
-		// console.log(errors.detail.text);
-		if (errors.detail.text.length === 0) {
-			errorMessage = 'No errors!';
-			errorBackground = 'bg-green-400';
-		}
-		else {
-			let messages = [];
-			for (const error of errors.detail.text) {
-				messages.push(formatErrorMessage(error));
-			}
-			errorMessage = messages.join('<br>');
-			errorBackground = 'bg-red-400';
-		}
+	// function formatErrors(errors) {
+	// 	// console.log(errors.detail.text);
+	// 	if (errors.detail.text.length === 0) {
+	// 		errorMessage = 'No errors!';
+	// 		errorBackground = 'bg-green-400';
+	// 	}
+	// 	else {
+	// 		let messages = [];
+	// 		for (const error of errors.detail.text) {
+	// 			messages.push(formatErrorMessage(error));
+	// 		}
+	// 		errorMessage = messages.join('<br>');
+	// 		errorBackground = 'bg-red-400';
+	// 	}
+	// }
+	
+	function validateText(){
+		validText = text;
 	}
 
 	function insertAtIndex(value, relCursorPosition) {
@@ -137,24 +150,29 @@
             </div>
         </div>
         <div class='flex-grow flex flex-row overflow-auto'>
-            <div id="scrollView-m" class='w-1/2 ml-4 mr-2 mb-4 flex flex-col'>
+            <div class='w-1/2 ml-4 mr-2 mb-4 flex flex-col'>
                 <!-- <textarea id="input" bind:value={text} on:scroll={scrollPosition} on:input={setCursor} on:click={setCursor} on:keyup={setCursor} class="resize-none outline-none h-full p-3 w-full bg-slate-700 text-slate-50 scrollbar scrollbar-thumb-slate-800 scroll-container"/>     -->
-                <textarea id="input"  bind:value={text} class="resize-none outline-none p-3 h-full bg-slate-700 text-slate-50"></textarea>    
+                <textarea id="input" class="resize-none outline-none p-3 bg-slate-700 text-slate-50 text-clip">{text}</textarea>    
                 <!-- <div class='h-full overflow-visible'> -->
                     
                 <!-- <CodeMirrorComponent bind:Editor={editor} bind:Value={text} Mode={'json'} closeBrackets={true}/> -->
                 <!-- </div> -->
                 
-                <div class='{errorBackground} opacity-70 h-24 mt-4 overflow-auto'>
+				
+
+                <!-- <div class='{errorBackground} opacity-70 h-24 mt-4 overflow-auto'>
                 {#if errorMessage !== ''}
                         <p class='p-2 pb'>
                             {@html errorMessage}
                         </p>
                 {/if}
-            </div>
+				</div>
+			-->
+				<ErrorView {text} on:noCriticalErrors={validateText}/>
             </div>
             <div class='w-1/2 mr-4 ml-2 mb-4 overflow-auto'>
-                <DiscordView text={text} on:errors={formatErrors}/>                                            
+                <!-- <DiscordView text={text} on:errors={formatErrors}/>                                             -->
+				<DiscordView text={validText}/>
             </div>
         </div>
     </div>

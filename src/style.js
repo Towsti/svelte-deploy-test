@@ -158,7 +158,7 @@ function findStyleErrors(text) {
 			if (match = mlines[i].match(/[ \t]$/)) {
 				results.push({
 					line: message.firstline + i,
-					type: "error",
+					type: "warn",
 					text: "Content should not include trailing whitespace"
 				});
 			}
