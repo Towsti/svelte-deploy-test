@@ -48,11 +48,11 @@
     }
 </script>
 
-<!-- <div class='message-text'>
+<div class='message-text'>
     <div class='markup'>
         {@html messageFormatted.content}
     </div>
 </div>
 {#if messageFormatted.embed}
     <Embed {...messageFormatted.embed}/>
-{/if} -->
+{/if}
