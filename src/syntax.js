@@ -1,28 +1,50 @@
 import { embedSchema } from "./constants/embedSchema";
 import Ajv from "ajv";
+// import {jsonMap} from "json-source-map";
+// import { betterAjvErrors } from 'better-ajv-errors';
 
 
 const ajv = new Ajv({allErrors:true});
-const validate = ajv.compile(embedSchema);
+const validator = ajv.compile(embedSchema);
+// var jsonMap = require('json-source-map');
+
+function lineNumbers(subject) {
+	// console.log(subject);
+	// let errorMessage = '';
+	// console.log(jsonMap);
+    // // const sourceMap = jsonMap.stringify(subject, null, 2);
+    // // const jsonLines = sourceMap.json.split('\n');
+    // validator.errors.forEach(error => {
+    // 	// errorMessage += '\n\n' + validator.errorsText([ error ]);
+    //   	// let errorPointer = sourceMap.pointers[error.instancePath];
+    //   	// errorMessage += '\n> ' + jsonLines.slice(errorPointer.value.line, errorPointer.valueEnd.line).join('\n> ');
+    // });
+	// console.log(errorMessage);
+
+}
 
 
 function formatError(error) {
     if (error.keyword === 'additionalProperties')
-        return `Unrecognized property "${error.params.additionalProperty}"`;
+        return `Unrecognized property '${error.params.additionalProperty}'`;
     else
-        return `"${error.instancePath}" ${error.message}`;
+        return `'${error.instancePath.slice(1)}' ${error.message}`;
 }
 
 function validateEmbedSchema(results, line, embed) {
-    const valid = validate(embed);
+    const valid = validator(embed);
     if (!valid) {
-        for (const error of validate.errors) {
-            console.log(formatError(error));
+		// const output = betterAjvErrors(embedSchema, embed, validator.errors);
+  		// console.log(output);
+		
+		  // lineNumbers(embed);
+        for (const error of validator.errors) {
+			console.log(error);
             results.push({
                 line: line,
                 type: "error",
                 text: formatError(error)
-            })
+            });
         }     
     }
 }

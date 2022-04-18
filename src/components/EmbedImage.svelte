@@ -1,10 +1,7 @@
 <script>
-    export let url = null;
-    
+    export let url;
 </script>
 
-{#if url}
-    <a className='embed-thumbnail embed-thumbnail-rich'>
-        <img className='image' role='presentation' src={url}/>
-    </a>
-{/if}
+<a class='embed-thumbnail embed-thumbnail-rich' href='\'>
+    <img class='image' role='presentation' src={url} alt='embed'/>
+</a>

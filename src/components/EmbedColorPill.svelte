@@ -5,6 +5,8 @@
     $: if (color) {
         const c = extractRGB(color);
         computed = `rgba(${c.r},${c.g},${c.b},1)`;
+    } else {
+        computed = '';
     }
 
     function extractRGB(i) {
@@ -16,4 +18,4 @@
     }
 </script>
 
-<div class='embed-color-pill' style="backgroundColor: {computed !== undefined ? computed : ''}"/>
+<div class='embed-color-pill' style='background-color: {computed}'/>

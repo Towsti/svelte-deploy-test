@@ -1,20 +1,17 @@
-<!-- <script>
-    export let name, url, icon_url;
-    let authorName;
-
-    $: if (name) {
-        if (url) {
-            authorName = <Link href={url} className='embed-author-name'>{name}</Link>;
-        }
-    }
-
-    function extractRGB(i) {
-        return {
-            r: (i >> 16) & 0xFF,
-            g: (i >> 8) & 0xFF,
-            b: i & 0xFF,
-        };
-    }
+<script>
+    export let name;
+    export let url = null;
+    export let icon_url = null;
 </script>
 
-<div class='embed-color-pill' style="backgroundColor: {computed !== undefined ? computed : ''}"/> -->
+
+<div class='embed-author'>
+    {#if url}
+        <a target='_blank' rel='noreferrer' href={url} class='embed-author-name'>{name}</a>
+    {:else}
+        <span class='embed-author-name'>{name}</span>
+    {/if}
+    {#if icon_url}
+        <img src={icon_url} role='presentation' class='embed-author-icon' alt='athor-icon'/>
+    {/if}
+</div>

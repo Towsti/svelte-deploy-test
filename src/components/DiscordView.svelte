@@ -6,6 +6,7 @@
     import findStyleErrors from '../style';
     import findSyntaxErrors from '../syntax';
 
+
     // debug
     const dispatch = createEventDispatcher();
 
@@ -59,7 +60,6 @@
         let messages = [];
         let message = {
             content: '',
-            embed: '',
             command: ''
         };
         const lines = text.split('\n');
@@ -74,7 +74,6 @@
                 messages.push(message);
                 message = {
                     content: '',
-                    embed: '',
                     command: ''
                 };
             }
@@ -90,8 +89,7 @@
 
 </script>
 
-<div class='h-full scrollbar scrollbar-thumb-slate-800'>
-    
+<div class='h-full'>
     <div class='discord-view'>
         <div class='flex-vertical whitney theme-dark'>
             <div class='chat flex-vertical flex-spacer'>
@@ -119,14 +117,7 @@
             </div>
         </div>
     </div>
-
-    <!-- <div class='bg-red-400 p-2 h-24 overflow-auto scrollbar-thin scrollbar-thumb-red-700'>
-		<p class='p-1'>
-			{text}
-		</p>
-		</div> -->
-
-    </div>
+</div>
 
 <!-- <div class='overflow-auto w-full h-full rounded-lg border-2 border-slate-900 scrollbar-thin scrollbar-thumb-slate-900'>
 <div class='discord-view'>

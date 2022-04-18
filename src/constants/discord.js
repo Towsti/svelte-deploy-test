@@ -1,5 +1,7 @@
-export const avatarURL = 'https://cdn.discordapp.com/avatars/689197754584399963/51fc3581cac941e4adbafd41e7ae2ec3.webp?size=80';
-export const username = 'PvM Encyclopedia';
+// export const avatarURL = 'https://cdn.discordapp.com/avatars/689197754584399963/51fc3581cac941e4adbafd41e7ae2ec3.webp?size=80';
+export const avatarURL = 'https://cdn.discordapp.com/embed/avatars/0.png';
+// export const username = 'PvM Encyclopedia';
+export const username = 'TestBot';
 
 export const channels = {
     '689235882724818962': 'armour-and-weapons',
