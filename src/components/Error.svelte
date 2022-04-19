@@ -2,7 +2,8 @@
     export let error;
 
     function formatErrorLine(line) {
-        return line[0] === line[1] ? `line: ${line[0]}` : `lines: ${line.join('-')}`;
+        // return line[0] === line[1] ? `line: ${line[0]}` : `lines: ${line.join('-')}`;
+        return line[0] === line[1] ? line[0] : line.join('-');
     }
 
     function formatErrorEmoji(errorType) {
@@ -23,4 +24,10 @@
 </script>
 
 <!-- todo: individual line, type, text variable -->
-{@html formatErrorEmoji(error.type)} {formatErrorLine(error.line)} - {error.text}<br>
+<!-- {@html formatErrorEmoji(error.type)} {formatErrorLine(error.line)} - {error.text}<br> -->
+
+<tr>
+    <td>{@html formatErrorEmoji(error.type)}</td>
+    <td>{formatErrorLine(error.line)}</td>
+    <td>{error.text}</td>
+</tr>

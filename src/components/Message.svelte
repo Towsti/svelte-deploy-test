@@ -56,17 +56,17 @@
 
 
 <!-- {#if newMessage} -->
-<div>
+<!-- <div> -->
 <!-- {@html messageFormatted.content} -->
-{messageFormatted.content}
-</div>
+<!-- {messageFormatted.content}
+</div> -->
 <!-- {/if} -->
 
-<!-- <div class='message-text'>
+<div class='message-text'>
     <div class='markup'>
         {@html messageFormatted.content}
     </div>
 </div>
 {#if messageFormatted.embed}
     <Embed {...messageFormatted.embed}/>
-{/if} -->
+{/if}

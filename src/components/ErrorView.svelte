@@ -25,10 +25,38 @@
     }
 </script>
 
-<div class='bg-slate-400 h-24 mt-4 overflow-auto'>
-    <p class='p-2'>
+<!-- <div class='errorView h-24 mt-4 overflow-auto'>
+    <p class='p-2 errorMessages'>
         {#each errors as error}
             <Error {error}/>
         {/each}
     </p>
+</div> -->
+
+<div class='errorView h-28 mt-4 overflow-auto p-1 '>
+    <table class="table-auto text-white text-left w-full border-collapse">
+        <!-- <thead>
+            <tr>
+                <th>Type</th>
+                <th>Lines</th>
+                <th>Warning</th>
+            </tr>
+        </thead> -->
+        <tbody>
+            {#each errors as error}
+                <Error {error}/>
+            {/each}
+        </tbody>
+    </table>
 </div>
+
+<style>
+    .errorView {
+        background-color: #263238
+    }
+
+    .errorMessages {
+        color: #EEFFFF;
+    }
+
+</style>

@@ -4,14 +4,19 @@
 	import { defaultText, defaultEmbed } from './constants/defaultText';
 	// import ScrollSync from "scroll-sync";
 	import 'codemirror/lib/codemirror.css';
+	import 'codemirror/theme/material.css';
+	// import 'codemirror/mode/javascript/javascript';
+	// import 'codemirror/mode/gfm/gfm';
+	// import './codemirrorTheme/pvme/pvme';
 	import 'codemirror/addon/edit/closebrackets';
 	import 'codemirror/addon/edit/matchbrackets';
 	import CodeMirror from 'codemirror';
 	import { onMount } from 'svelte';
 
-	import findStyleErrors from './style';
-    import findSyntaxErrors from './syntax';
-	
+	import Fa from 'svelte-fa';
+	import { faBold, faItalic, faUnderline, faStrikethrough, faHeading, fa1, faListDots, faListNumeric, faCode, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+
+	import GroupButton from './components/GroupButton.svelte';
 	// import 'codemirror/mode/javascript/javascript';
 	// import 'codemirror/mode/markdown/markdown';
 
@@ -20,8 +25,16 @@
 
 	onMount(()=>{
 		editor = CodeMirror.fromTextArea(document.getElementById('input'), {
+			// mode: { name: 'text/javascript', json: true },
+			// mode: {name: 'pvme', emoji: false, taskLists: false, gitHubSpice: false},
+			theme: 'material',
 			lineNumbers: true,
-			scrollbarStyle: null
+			lineWrapping: true,
+			autoCloseBrackets: true,
+  			matchBrackets: true,
+			autofocus: true,
+			// cursorScrollMargin: 40
+			viewportMargin: Infinity
 		});
 		// console.log("Editor: ", editor);
 
@@ -118,9 +131,14 @@
 	function h2() {
 		insertAtIndex('__****__', '__**'.length);
 	}
+
+	function debug() {
+		console.log("debug");
+	}
 </script>
 
 <main>
+	
 	<!-- <div class='flex flex-col bg-slate-800 h-screen'>
 		<div class="flex justify-left mt-4 mb-2 mx-2 flex-wrap">
 			<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">
@@ -143,11 +161,28 @@
 			</div>
 		</div>
 	</div> -->
-	<div class='flex flex-col bg-slate-800 h-screen'>
+	<!-- <div class='flex flex-col h-screen' style='background: #7289da'> -->
+	<div class='flex flex-col h-screen bg-indigo-400'>
+		<i class="fas fa-band-aid"></i>
         <div class="flex justify-left mt-4 mb-2 mx-2 flex-wrap">
             <div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">
-                <button on:click={h1} type="button" class="rounded-l inline-block px-2 py-2 bg-slate-500 text-white leading-tight hover:bg-slate-600 focus:bg-slate-600 focus:outline-none focus:ring-0 active:bg-slate-900 transition duration-150 ease-in-out">H1</button>
-            </div>
+                <!-- <button on:click={h1} type="button" class="rounded-l inline-block px-2 py-2 bg-slate-500 text-white leading-tight hover:bg-slate-600 focus:bg-slate-600 focus:outline-none focus:ring-0 active:bg-slate-900 transition duration-150 ease-in-out">H1</button> -->
+				<GroupButton on:click={debug} corner={'rounded-l'} selected={'selected'} title='Bold - ctrl+b'><Fa icon={faBold} /></GroupButton>
+				<GroupButton on:click={debug}><Fa icon={faItalic} /></GroupButton>
+				<GroupButton on:click={debug}><Fa icon={faUnderline} /></GroupButton>
+				<GroupButton on:click={debug} corner={'rounded-r'}><Fa icon={faStrikethrough} /></GroupButton>
+			</div>
+			<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">
+				<GroupButton on:click={debug} corner={'rounded-l'}><strong>H1</strong></GroupButton>
+				<GroupButton on:click={debug} corner={'rounded-r'}><strong>H2</strong></GroupButton>
+			</div>
+			<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">
+				<GroupButton on:click={debug} corner={'rounded-l'}><Fa icon={faListDots} /></GroupButton>
+				<GroupButton on:click={debug} corner={'rounded-r'}><Fa icon={faListNumeric} /></GroupButton>
+			</div>
+			<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">
+				<GroupButton on:click={debug} corner={'rounded'}><strong>Commands</strong><Fa fw icon={faCaretDown} /></GroupButton>
+			</div>
         </div>
         <div class='flex-grow flex flex-row overflow-auto'>
             <div class='w-1/2 ml-4 mr-2 mb-4 flex flex-col'>
@@ -182,4 +217,20 @@
 	@tailwind base;
 	@tailwind components;
 	@tailwind utilities;
+/* 
+	.CodeMirror {
+		--tw-bg-opacity: 1;
+    	background-color: rgb(54 57 62) !important;
+		color: white !important;
+	} */
+
+	.CodeMirror {
+		/* font-family: Arial, monospace; */
+		font-size: 14px;
+		/* background-color: #2e3136 !important; */
+		/* font-family: Consolas, Liberation Mono, Menlo, Courier, monospace; */
+		/* color: hsla(0, 0%, 100%, .7) !important; */
+		/* color: #f9f9f9 !important; */
+		/* color: #839496 !important; */
+	}
 </style>
