@@ -59,3 +59,9 @@
 /* .embed .embed-fields .embed-field.embed-field-inline {
     flex-basis: !important;
 } */
+
+.media {
+    max-width: 560px !important;
+    max-height: 400px;
+    /* display:block;   */
+}

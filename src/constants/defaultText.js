@@ -1,5 +1,7 @@
 export const defaultText = 
-`> __**Introduction**__
+`text https://youtu.be/dGDwdi6PojI more text <https://youtu.be/dGDwdi6PojI> even more text
+.img:https://i.imgur.com/Nl5qKod.png
+> __**Introduction**__
 .tag:introduction
 __**About the Style Guide**__
 ⬥ This channel details many stylistic aspects that all PvME guides should follow.

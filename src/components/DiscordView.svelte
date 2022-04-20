@@ -54,7 +54,7 @@
                                             <Bot/>
                                             {#if discordMessages}
                                                 {#each discordMessages as message}
-                                                    <Message message={message}/>
+                                                    <Message {...message}/>
                                                 {/each}
                                             {/if}
                                         </div>

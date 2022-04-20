@@ -34,7 +34,7 @@
 </div> -->
 
 <div class='errorView h-28 mt-4 overflow-auto p-1 '>
-    <table class="table-auto text-white text-left w-full border-collapse">
+    <table class="table-auto text-white text-left w-full">
         <!-- <thead>
             <tr>
                 <th>Type</th>

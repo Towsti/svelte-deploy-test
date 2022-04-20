@@ -13,12 +13,25 @@
 	import CodeMirror from 'codemirror';
 	import { onMount } from 'svelte';
 
-	import Fa from 'svelte-fa';
-	import { faBold, faItalic, faUnderline, faStrikethrough, faHeading, fa1, faListDots, faListNumeric, faCode, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+	// import Fa from 'svelte-fa';
+	// import { faBold, faItalic, faUnderline, faStrikethrough, faHeading, fa1, faListDots, faListNumeric, faCode, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+	// import "bootstrap-icons/font/bootstrap-icons.css";
 
 	import GroupButton from './components/GroupButton.svelte';
 	// import 'codemirror/mode/javascript/javascript';
 	// import 'codemirror/mode/markdown/markdown';
+	import {
+		CodeSquare,
+		Code,
+		TypeBold,
+		TypeItalic,
+		TypeUnderline,
+		TypeStrikethrough,
+		TypeH1,
+		TypeH2,
+		ListUl,
+		ListOl
+  	} from "svelte-bootstrap-icons";
 
 
 	let editor;
@@ -40,6 +53,14 @@
 
 		editor.setSize('100%', '100%');
 		editor.on('change', updater);
+
+		editor.setOption("extraKeys", {
+			'Ctrl-B': bold,
+			'Ctrl-I': italic,
+			'Ctrl-U': underline,
+			'Ctrl-Alt-S': strikethrough
+		});
+
 		// editor.on('cursorActivity', cursorMoved);
 
 		// const ss = new ScrollSync({
@@ -97,7 +118,118 @@
 		// document.getElementById('input').setFocus();
 		editor.focus();
 		// editor.markText(cursor, {line: cursor.line, ch: cursor.ch + 10}, {className: 'bg-slate-500'});
-		editor.markText({line: cursor.line, ch: 0}, {line: cursor.line}, {className: 'bg-red-400 opacity-80'});
+		// editor.markText({line: cursor.line, ch: 0}, {line: cursor.line}, {className: 'bg-red-400 opacity-80'});
+	}
+
+	function selectionRangeFixedStartEnd() {
+		const selectionRange = editor.listSelections()[0];
+		let selection = Object();
+
+		if ((selectionRange.anchor.line < selectionRange.head.line) || 
+			(selectionRange.anchor.ch <= selectionRange.head.ch)) {
+			selection.start = selectionRange.anchor;
+			selection.end = selectionRange.head;
+		}
+		else {
+			selection.start = selectionRange.head;
+			selection.end = selectionRange.anchor;
+		}
+		// console.log(`start: (${selection.start.line}, ${selection.start.ch}), end: (${selection.end.line}, ${selection.end.ch})`);
+		return selection;
+	}
+
+	function includeBeforeAfterText(fixedSelectionRange, lengthBefore, lengthAfter) {
+		return editor.getRange(
+			{
+				line: fixedSelectionRange.start.line,
+				ch: fixedSelectionRange.start.ch - lengthBefore
+			},
+			{
+				line: fixedSelectionRange.end.line,
+				ch: fixedSelectionRange.end.ch + lengthAfter
+			}
+		);
+	}
+
+	function isMultiLineSelection(fixedSelectionRange) {
+		return fixedSelectionRange.end.line > fixedSelectionRange.start.line;
+	}
+
+	function updateStyleFormat(textBeforeSelection, textAfterSelection){
+		const selectionRange = selectionRangeFixedStartEnd();
+		const selection = editor.getSelection();
+
+		const lengthBefore = textBeforeSelection.length;
+		const lengthAfter = textAfterSelection.length;
+		const containedText = includeBeforeAfterText(selectionRange, lengthBefore, lengthAfter);
+
+		if (containedText.startsWith(textBeforeSelection) && containedText.endsWith(textAfterSelection)) {
+			editor.replaceRange(
+				selection,
+				{
+					line: selectionRange.start.line,
+					ch: selectionRange.start.ch - lengthBefore
+				},
+				{
+					line: selectionRange.end.line,
+					ch: selectionRange.end.ch + lengthAfter
+				}
+			);
+		
+			editor.setSelection(
+				{
+					line: selectionRange.start.line,
+					ch: selectionRange.start.ch - lengthBefore
+				},
+				{
+					line: selectionRange.end.line,
+					ch: selectionRange.end.ch - (isMultiLineSelection(selectionRange) ? 0 : lengthBefore)
+				}
+			);
+		}
+		else {
+			editor.replaceSelection(textBeforeSelection + selection + textAfterSelection, selection);
+
+			editor.setSelection(
+				{
+					line: selectionRange.start.line,
+					ch: selectionRange.start.ch + lengthBefore
+				},
+				{
+					line: selectionRange.end.line,
+					ch: selectionRange.end.ch + (isMultiLineSelection(selectionRange) ? 0 : lengthBefore)
+				}
+			);
+		}
+		editor.focus();
+	}
+
+	function bold() {
+		updateStyleFormat('**', '**');
+	}
+
+	function italic() {
+		updateStyleFormat('*', '*');
+	}
+
+	function underline() {
+		updateStyleFormat('__', '__');
+	}
+
+	function strikethrough() {
+		updateStyleFormat('~~', '~~');
+	}
+
+	function h1() {
+		updateStyleFormat('> __**', '**__');
+	}
+
+	function h2() {
+		updateStyleFormat('__**', '**__');
+	}
+
+	function inlineCode() {
+		updateStyleFormat('\`', '\`');
 	}
 
 	function setCursor(e) {
@@ -120,17 +252,17 @@
 		// text = event.detail;
 	}
 
-	function h1() {
-		// insertAtIndex('> __****__', '> __**'.length);
-		// editor = CodeMirror.fromTextArea(document.getElementById('input'), {
-		// 	lineNumbers: true
-		// });
-		// editor.setSize('100%', '100%');
-	}
+	// function h1() {
+	// 	// insertAtIndex('> __****__', '> __**'.length);
+	// 	// editor = CodeMirror.fromTextArea(document.getElementById('input'), {
+	// 	// 	lineNumbers: true
+	// 	// });
+	// 	// editor.setSize('100%', '100%');
+	// }
 
-	function h2() {
-		insertAtIndex('__****__', '__**'.length);
-	}
+	// function h2() {
+	// 	insertAtIndex('__****__', '__**'.length);
+	// }
 
 	function debug() {
 		console.log("debug");
@@ -163,25 +295,24 @@
 	</div> -->
 	<!-- <div class='flex flex-col h-screen' style='background: #7289da'> -->
 	<div class='flex flex-col h-screen bg-indigo-400'>
-		<i class="fas fa-band-aid"></i>
         <div class="flex justify-left mt-4 mb-2 mx-2 flex-wrap">
-            <div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">
-                <!-- <button on:click={h1} type="button" class="rounded-l inline-block px-2 py-2 bg-slate-500 text-white leading-tight hover:bg-slate-600 focus:bg-slate-600 focus:outline-none focus:ring-0 active:bg-slate-900 transition duration-150 ease-in-out">H1</button> -->
-				<GroupButton on:click={debug} corner={'rounded-l'} selected={'selected'} title='Bold - ctrl+b'><Fa icon={faBold} /></GroupButton>
-				<GroupButton on:click={debug}><Fa icon={faItalic} /></GroupButton>
-				<GroupButton on:click={debug}><Fa icon={faUnderline} /></GroupButton>
-				<GroupButton on:click={debug} corner={'rounded-r'}><Fa icon={faStrikethrough} /></GroupButton>
+            <div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">                
+				<GroupButton on:click={bold} title='Bold - Ctrl+B' corner={'rounded-l'} ><TypeBold/></GroupButton>
+				<GroupButton on:click={italic} title='Italic - Ctrl+I'><TypeItalic/></GroupButton>
+				<GroupButton on:click={underline} title='Italic - Ctrl+U'><TypeUnderline/></GroupButton>
+				<GroupButton on:click={strikethrough} title='Strikethrough - Ctrl+Alt+S' corner={'rounded-r'}><TypeStrikethrough/></GroupButton>
 			</div>
 			<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">
-				<GroupButton on:click={debug} corner={'rounded-l'}><strong>H1</strong></GroupButton>
-				<GroupButton on:click={debug} corner={'rounded-r'}><strong>H2</strong></GroupButton>
+				<GroupButton on:click={h1} title='Header 1' corner={'rounded-l'}><TypeH1/></GroupButton>
+				<GroupButton on:click={h2} title='Header 2' corner={'rounded-r'}><TypeH2/></GroupButton>
 			</div>
 			<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">
-				<GroupButton on:click={debug} corner={'rounded-l'}><Fa icon={faListDots} /></GroupButton>
-				<GroupButton on:click={debug} corner={'rounded-r'}><Fa icon={faListNumeric} /></GroupButton>
+				<GroupButton on:click={debug} corner={'rounded-l'}><ListUl/></GroupButton>
+				<GroupButton on:click={debug} corner={'rounded-r'}><ListOl/></GroupButton>
 			</div>
 			<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">
-				<GroupButton on:click={debug} corner={'rounded'}><strong>Commands</strong><Fa fw icon={faCaretDown} /></GroupButton>
+				<GroupButton on:click={inlineCode} title='Inline Code' corner={'rounded-l'}><Code/></GroupButton>
+				<GroupButton on:click={debug} corner={'rounded-r'}><CodeSquare/></GroupButton>
 			</div>
         </div>
         <div class='flex-grow flex flex-row overflow-auto'>
