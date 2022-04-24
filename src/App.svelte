@@ -12,6 +12,7 @@
 	import 'codemirror/addon/edit/matchbrackets';
 	import CodeMirror from 'codemirror';
 	import { onMount } from 'svelte';
+	// import { status } from './constants/discord';
 
 	// import Fa from 'svelte-fa';
 	// import { faBold, faItalic, faUnderline, faStrikethrough, faHeading, fa1, faListDots, faListNumeric, faCode, faCaretDown } from '@fortawesome/free-solid-svg-icons';
@@ -20,18 +21,17 @@
 	import GroupButton from './components/GroupButton.svelte';
 	// import 'codemirror/mode/javascript/javascript';
 	// import 'codemirror/mode/markdown/markdown';
-	import {
-		CodeSquare,
-		Code,
-		TypeBold,
-		TypeItalic,
-		TypeUnderline,
-		TypeStrikethrough,
-		TypeH1,
-		TypeH2,
-		ListUl,
-		ListOl
-  	} from "svelte-bootstrap-icons";
+
+	import CodeSquare from 'svelte-bootstrap-icons/lib/CodeSquare';
+	import Code from 'svelte-bootstrap-icons/lib/Code';
+	import TypeBold from 'svelte-bootstrap-icons/lib/TypeBold';
+	import TypeItalic from 'svelte-bootstrap-icons/lib/TypeItalic';
+	import TypeUnderline from 'svelte-bootstrap-icons/lib/TypeUnderline';
+	import TypeStrikethrough from 'svelte-bootstrap-icons/lib/TypeStrikethrough';
+	import TypeH1 from 'svelte-bootstrap-icons/lib/TypeH1';
+	import TypeH2 from 'svelte-bootstrap-icons/lib/TypeH2';
+	import ListUl from 'svelte-bootstrap-icons/lib/ListUl';
+	import ListOl from 'svelte-bootstrap-icons/lib/ListOl';
 
 
 	let editor;
@@ -60,6 +60,9 @@
 			'Ctrl-U': underline,
 			'Ctrl-Alt-S': strikethrough
 		});
+		
+		
+		// console.log(result);
 
 		// editor.on('cursorActivity', cursorMoved);
 
@@ -295,7 +298,7 @@
 	</div> -->
 	<!-- <div class='flex flex-col h-screen' style='background: #7289da'> -->
 	<div class='flex flex-col h-screen bg-indigo-400'>
-        <div class="flex justify-left mt-4 mb-2 mx-2 flex-wrap">
+		<div class="flex justify-left mt-4 mb-2 mx-2 flex-wrap">
             <div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg mb-2 mx-2" role="group">                
 				<GroupButton on:click={bold} title='Bold - Ctrl+B' corner={'rounded-l'} ><TypeBold/></GroupButton>
 				<GroupButton on:click={italic} title='Italic - Ctrl+I'><TypeItalic/></GroupButton>

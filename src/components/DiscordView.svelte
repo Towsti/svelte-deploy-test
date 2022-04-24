@@ -2,9 +2,10 @@
     import Message from './Message.svelte';
     import Avatar from './Avatar.svelte';
     import Bot from './Bot.svelte';
+    import { populateConstants } from './../constants/discord';
 
     export let text;
-    $: discordMessages = splitMessages(text);
+    // $: discordMessages = splitMessages(text);
 
     function splitMessages(text) {
         let messages = [];
@@ -52,11 +53,17 @@
                                     <div class='comment'>
                                         <div class='message first'>
                                             <Bot/>
-                                            {#if discordMessages}
-                                                {#each discordMessages as message}
+                                            {#await populateConstants()}
+                                                <p>Waiting for channels, users, and prices to load...</p>
+                                            {:then}
+                                            <!-- {#if discordMessages} -->
+                                                {#each splitMessages(text) as message}
                                                     <Message {...message}/>
                                                 {/each}
-                                            {/if}
+                                            <!-- {/if} -->
+                                            {:catch error}
+                                                <p style="color: red">{error.message}</p>
+                                            {/await}
                                         </div>
                                     </div>
                                 </div>

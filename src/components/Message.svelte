@@ -1,7 +1,7 @@
 <script>
     import markdownToHTML from '../markdown.js';
     import Embed from './Embed.svelte';
-    import Attachment from './Attachment.svelte';
+    import Attachment from './Attachment.svelte'
 
     export let content;
     export let command;
@@ -14,7 +14,7 @@
         // add attachment for urls
         const regexp = /[^<](https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g
         const results = [...text.matchAll(regexp)];
-        console.log(results);
+        // console.log(results);
     }
 
     $: if (content !== oldContent || command !== oldCommand) {
