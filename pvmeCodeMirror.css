@@ -1,0 +1,4 @@
+.cm-s-pvme  { font-family: Consolas, Menlo, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif;}
+.cm-s-pvme.CodeMirror { background: #36393e; color: #d0d8dd; }
+
+.cm-s-darcula .CodeMirror-gutters { background: #313335; border-right: 1px solid #313335; }
