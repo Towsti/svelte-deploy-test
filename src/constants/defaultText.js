@@ -1,29 +1,29 @@
 export const defaultText = 
 `Prices:
-1/3 green blubber jellyfish 320 => $data_pvme:Prices!B8$
+1/3 green blubber jellyfish 325 => $data_pvme:Prices!B8$
 Invalid row => $data_pvme:Prices!B11100$
 Invalid column => $data_pvme:Prices!Z2$
 
 Consumables:
-Guthix Rest Flask (6)	44,435 => $data_pvme:Consumables!B6$
-ROD charge	323,966 => $data_pvme:Consumables!E9$
+Guthix Rest Flask (6)	44,153 => $data_pvme:Consumables!B6$
+ROD charge	323,878 => $data_pvme:Consumables!E9$
 
 Unlocks:
-Double Escape codex (tradeable)	45,694,292 => $data_pvme:Unlocks!B8$
-Limitless	405,268,000 => $data_pvme:Unlocks!E1$
+Double Escape codex (tradeable)	83,066,493 => $data_pvme:Unlocks!B8$
+Limitless	390,716,000 => $data_pvme:Unlocks!E1$
 
 Miscellaneous:
-Key to the Crossing	108,301 => $data_pvme:Miscellaneous!B4$
-Ring of death upgrade	41,723,185 => $data_pvme:Miscellaneous!H8$
+Key to the Crossing	110,473 => $data_pvme:Miscellaneous!B4$
+Ring of death upgrade	41,906,131 => $data_pvme:Miscellaneous!H8$
 
 Perks:
-p6e2 (precise+historic) 201,499,317 => $data_pvme:Perks!K22$
+p6e2 (precise+historic) 205,630,927 => $data_pvme:Perks!K22$
 
 Slayer:
-Uncut Diamond 408 => $data_pvme:Slayer!D79$
+Uncut Diamond 427 => $data_pvme:Slayer!D79$
 
 Bossses:
-Small blunt rune salvage 14,236 => $data_pvme:Bosses!D585$
+Small blunt rune salvage 14,165 => $data_pvme:Bosses!D585$
 
 roles:
 <@&535653951912280073>
@@ -37,7 +37,7 @@ channel:
 <#796067533924204595>
 <#796067533924204594>
 
-text https://youtu.be/dGDwdi6PojI more text <https://youtu.be/dGDwdi6PojI> even more text
+text <https://youtu.be/dGDwdi6PojI> more text <https://youtu.be/dGDwdi6PojI> even more text
 .img:https://i.imgur.com/Nl5qKod.png
 > __**Introduction**__
 .tag:introduction

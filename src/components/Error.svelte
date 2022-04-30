@@ -33,3 +33,17 @@
     <td>{formatErrorLine(error.line)}</td>
     <td>{@html formatErrorEmoji(error.type)} {error.text}</td>
 </tr>
+
+<style>
+    td {
+        /* color: #EEFFFF; */
+        /* color: hsla(0, 0%, 100%, .7); */
+        /* color: #d0d8dd; */
+        /* font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif; */
+        /* font-family: Menlo, Consolas, Monaco, monospace; */
+        font-size: 14px;
+
+        color: #f8f8f2;
+        font-family: monospace;
+    }
+</style>

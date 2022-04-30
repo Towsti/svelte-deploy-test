@@ -63,5 +63,7 @@
 .media {
     max-width: 560px !important;
     max-height: 400px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
     /* display:block;   */
 }

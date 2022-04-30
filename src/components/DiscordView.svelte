@@ -8,6 +8,7 @@
     // $: discordMessages = splitMessages(text);
 
     function splitMessages(text) {
+        // todo: ignore commands inside code block
         let messages = [];
         let message = {
             content: '',

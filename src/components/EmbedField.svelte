@@ -9,6 +9,6 @@
 </script>
 
 <div class={cls}>
-    <div class='embed-field-name'>{@html markdownToHTML(name)}</div>
-    <div class='embed-field-value markup'>{@html markdownToHTML(value, true)}</div>
+    <div class='embed-field-name'>{@html markdownToHTML(name).content}</div>
+    <div class='embed-field-value markup'>{@html markdownToHTML(value, true).content}</div>
 </div>

@@ -33,8 +33,8 @@
     </p>
 </div> -->
 
-<div class='errorView h-28 mt-4 overflow-auto p-1 '>
-    <table class="table-auto text-white text-left w-full">
+<div class='errorView h-28 mt-4 overflow-auto p-1'>
+    <table class="table-auto text-left w-full">
         <!-- <thead>
             <tr>
                 <th>Type</th>
@@ -52,11 +52,16 @@
 
 <style>
     .errorView {
-        background-color: #263238
+        /* background-color: #263238 */
+        /* background-color: rgb(79 84 92); */
+        /* background-color: #36393e; */
+        /* background-color: #2e3136; */
+
+        background-color: #282a36;
     }
 
-    .errorMessages {
+    /* .errorMessages {
         color: #EEFFFF;
-    }
+    } */
 
 </style>

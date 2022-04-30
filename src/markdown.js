@@ -1,29 +1,81 @@
-import { toHTML } from 'discord-markdown';
+import { toHTML, rules, htmlTag } from 'discord-markdown';
 import { channels, users, roles, pvmeSpreadsheet } from './constants/discord';
+import markdown from 'simple-markdown';
 
+
+/* Overide blockquote formatting to use discord format. 
+FROM:
+<blockquote>text<br>more text</blockquote>
+
+TO:
+<div class="blockquoteContainer">
+    <div class="blockquoteDivider"></div><blockquote>text<br>more text</blockquote>
+</div> */
+rules.blockQuote.html = (node, output, state) => {
+    // todo: make sure output(node.content, state) is correct
+    const blockQuote = htmlTag('blockquote', output(node.content, state), null, state);
+    const divider = '<div class="blockquoteDivider"></div>' + blockQuote;
+    return htmlTag('div', divider, {class: 'blockquoteContainer'}, state);
+}
+
+/* Overide inline code formatting to use discord format.
+FROM:
+<code>text</code>
+
+TO:
+<code class="inline">text</code> */
+rules.inlineCode.html  = (node, output, state) => {
+    return htmlTag('code', markdown.sanitizeText(node.content.trim()), { class: 'inline' }, state);
+}
+
+// add attachmentUrls for links not contained in <url>
+let messageAttachments = [];
+
+rules.url.parse = capture => {
+    messageAttachments.push(capture[1]);
+    return {
+        content: [{
+            type: 'text',
+            content: capture[1]
+        }],
+        target: capture[1]
+    };
+}
+
+
+String.prototype.replaceAt = function(startIndex, replacement, endIndex) {
+    return this.substring(0, startIndex) + replacement + this.substring(endIndex);
+}
 
 function formatPVMESpreadsheet(originalContent) {
-    // const regexp = /[^<](https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g
-    // const results = [...text.matchAll(regexp)];
-    // $data_pvme:Bosses!E653$
+    // known bug: currently formats prices in code blocks
     let content = originalContent;
     const regexp = /\$data_pvme:([^!]+)!([a-zA-Z]{1})([^$]+)\$/g;
     const results = [...content.matchAll(regexp)];
-    for (const result of results) {
-        // cell = pvmeSpreadsheet[result[1]][result[2]][result[3]];
-        // print(cell)
-        // console.log(pvmeSpreadsheet[result[1]]);
-        // console.log(_.getPath(pvmeSpreadsheet, `${result[1]}`));
-        if (pvmeSpreadsheet[result[1]] && pvmeSpreadsheet[result[1]][result[2]] && pvmeSpreadsheet[result[1]][result[2]][result[3]]) {
-            const cellValue = pvmeSpreadsheet[result[1]][result[2]][result[3]];
-            content = content.replaceAll(result[0], cellValue);
-        }
+    for (const result of results.reverse()) {
+        const [pvmeFormat, worksheet, col, row] = result;
+        const startIndex = result.index;
+        const endIndex = startIndex + pvmeFormat.length;
+        const cellValue = pvmeSpreadsheet?.[worksheet]?.[col]?.[row];
+        if (cellValue)
+            content = content.replaceAt(startIndex, cellValue, endIndex);
     }
-    // console.log(results);
     return content;
 }
 
+function formatAttachment(attachmentUrl) {
+    return {
+        embed: {
+            title: 'Youtube',
+            url: attachmentUrl
+        }
+    }
+}
+
 export default function markdownToHTML(messageContent, embed=false) {
+    // todo: linkmsg formatting
+    messageAttachments = [];
+
     // convert discord markdown to HTML
     let content = toHTML(messageContent, {
         discordCallback: {
@@ -33,15 +85,7 @@ export default function markdownToHTML(messageContent, embed=false) {
         },
         embed: embed    // allow for named links
     });
-    
-    // modify <blockquote/> to use correct css
-    content = content.replaceAll('<blockquote>', '<div class="blockquoteContainer"><div class="blockquoteDivider"></div><blockquote>');
-    content = content.replaceAll('</blockquote>', '</blockquote></div>');
-    
-    // modify <code> -> <code class="inline">
-    content = content.replaceAll('<code>', '<code class="inline">')    
-    
+       
     content = formatPVMESpreadsheet(content);
-
-    return content;
+    return { content, messageAttachments };
 }

@@ -10,5 +10,5 @@
     <a target='_blank' rel='noreferrer' href={url} class='embed-title'>{@html markdownToHTML(title)}</a>
 {:else}
     <!-- some rules do not apply -->
-    <div class='embed-title'>{@html markdownToHTML(title)}</div>
+    <div class='embed-title'>{@html markdownToHTML(title).content}</div>
 {/if}
