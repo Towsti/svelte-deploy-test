@@ -63,15 +63,6 @@ function formatPVMESpreadsheet(originalContent) {
     return content;
 }
 
-function formatAttachment(attachmentUrl) {
-    return {
-        embed: {
-            title: 'Youtube',
-            url: attachmentUrl
-        }
-    }
-}
-
 export default function markdownToHTML(messageContent, embed=false) {
     // todo: linkmsg formatting
     messageAttachments = [];
@@ -83,7 +74,7 @@ export default function markdownToHTML(messageContent, embed=false) {
             user: node => '@' + users[node.id],
             role: node => '@' + roles[node.id]
         },
-        embed: embed    // allow for named links
+        embed: embed    // allow for named links: [name](url)
     });
        
     content = formatPVMESpreadsheet(content);

@@ -31,9 +31,19 @@
 		<GroupButton on:click={() => dispatch('h2')} title='Header 2' corner={'rounded-r'}><TypeH2/></GroupButton>
     </ButtonGroup>
 
-    <ButtonGroup>
+    <!-- <ButtonGroup>
         <GroupButton on:click={() => dispatch('debug')} corner={'rounded-l'}><ListUl/></GroupButton>
 		<GroupButton on:click={() => dispatch('debug')} corner={'rounded-r'}><ListOl/></GroupButton>
+    </ButtonGroup> -->
+    <ButtonGroup>
+        <GroupButton on:click={() => dispatch('bold')} corner={'rounded-l'}>⬥</GroupButton>
+        <GroupButton on:click={() => dispatch('italic')}>•</GroupButton>
+        <GroupButton on:click={() => dispatch('strikethrough')} corner={'rounded-r'}>-</GroupButton>
+    </ButtonGroup>
+
+    <ButtonGroup>
+        <GroupButton on:click={() => dispatch('bold')} corner={'rounded-l'}>1</GroupButton>
+        <GroupButton on:click={() => dispatch('strikethrough')} corner={'rounded-r'}>a</GroupButton>
     </ButtonGroup>
 
     <ButtonGroup>

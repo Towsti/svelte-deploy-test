@@ -4,69 +4,88 @@
 	import { defaultText } from './constants/defaultText';
 
 	import 'codemirror/lib/codemirror.css';
-	import 'codemirror/theme/material.css';
-	import 'codemirror/theme/monokai.css';
-	import 'codemirror/theme/zenburn.css';
-	import 'codemirror/theme/dracula.css';	// best so far
-	import 'codemirror/theme/darcula.css';
+	import 'codemirror/theme/dracula.css';
+
+	// import 'codemirror/mode/markdown/markdown';
 
 	import 'codemirror/addon/edit/closebrackets';
 	import 'codemirror/addon/edit/matchbrackets';
+	import 'codemirror/addon/edit/trailingspace';
+	// import 'codemirror/addon/edit/continuelist';
+	import 'codemirror/addon/selection/active-line';
+
+	import './autoIndent';
+
 	import CodeMirror from 'codemirror';
 	import { onMount } from 'svelte';
 	import Toolbar from './components/Toolbar.svelte';
 	import ScrollSync from 'scroll-sync'
+	
 
 	import autoformatText from './autoformat'; 
 
 	import { persist, localStorage } from '@macfja/svelte-persistent-store';
 	import { writable } from 'svelte/store';
+	import { populateConstants } from './constants/discord';
 
+	import TempComponent from './components/TempComponent.svelte';
 
 	let editor;
 	// let text = defaultText;
 	let text = persist(writable(defaultText), localStorage(), 'text');
-	let validText = $text;
+	let validText = $text;	//  bug: exiting last session with invalid text
 	let cursor = 0; 
+	let visibleText = validText;
 	
 
 	onMount(()=>{
-		const ss = new ScrollSync({
-			disabled: false, 
-			relative: true, 
-			doms: document.querySelectorAll('.scroll-container')
-		});
-		var el = document.getElementById("myel");
-		el.scrollTop = 100;
+		// const ss = new ScrollSync({
+		// 	disabled: false, 
+		// 	relative: true, 
+		// 	doms: document.querySelectorAll('.scroll-container')
+		// });
+		// var el = document.getElementById("myel");
+		// el.scrollTop = 100;
 
 		editor = CodeMirror.fromTextArea(document.getElementById('input'), {
 			theme: 'dracula',
+			// mode: {name: 'markdown', highlightFormatting: false},
 			lineNumbers: true,
 			lineWrapping: true,
 			autoCloseBrackets: true,
   			matchBrackets: true,
 			autofocus: true,
 			// tabSize: 4	
-			// cursorScrollMargin: 40
+			cursorScrollMargin: 12,
+			showTrailingSpace: true,
+			styleActiveLine: true,
+			// flattenSpans: false
+
 			// viewportMargin: Infinity,
 			// pollInterval: 5000
 		});
 
 		editor.setSize('100%', '100%');
 		editor.on('change', updater);
+		editor.on('scroll', viewportChanger);
 
 		editor.setOption("extraKeys", {
 			'Ctrl-B': bold,
 			'Ctrl-I': italic,
 			'Ctrl-U': underline,
-			'Ctrl-Alt-S': strikethrough
+			'Ctrl-Alt-S': strikethrough,
+			'Enter': 'newlineAndIndentContinueMarkdownList',
+			'Tab': 'autoIndentMarkdownList',
+			'Shift-Tab': 'autoUnindentMarkdownList'
 		});
 
-		
-	})
+		editor.setValue($text);
+		validateText();
+	});
 	
 	function validateText(){
 		validText = $text;
+		visibleText = getVisibleText(validText);
 	}
 
 	function selectionRangeFixedStartEnd() {
@@ -103,15 +122,51 @@
 		return fixedSelectionRange.end.line > fixedSelectionRange.start.line;
 	}
 
+	function insideItalicFormatting(fixedSelectionRange, lengthBefore, lengthAfter) {
+		// workaround for *italic* and **bold**
+		// avoids that when you bold "**highlight**" then italic, that it will remove italic "*highlight*"
+		const selection = editor.getRange(
+			{
+				line: fixedSelectionRange.start.line,
+				ch: fixedSelectionRange.start.ch - 3
+			},
+			{
+				line: fixedSelectionRange.end.line,
+				ch: fixedSelectionRange.end.ch
+			}
+		);
+		// const endFormatting = selection.substring(selection.length - 3);
+		// return endFormatting.startsWith('***') || (!endFormatting.startsWith('**') && endFormatting.startsWith('*'));
+		if (selection.startsWith('***'))
+			return true;
+		
+		if (selection.startsWith('**') || selection.startsWith('**', 1))
+			return false;
+		
+		if (selection.startsWith('*') || selection.startsWith('*', 1) || selection.startsWith('*', 2))
+			return true;
+		
+		return false;
+	}
+
+	function insideFormatting(fixedSelectionRange, formattingBefore, formattingAfter) {
+		const lengthBefore = formattingBefore.length;
+		const lengthAfter = formattingAfter.length;
+		if (formattingBefore === '*') 
+			return insideItalicFormatting(fixedSelectionRange, lengthBefore, lengthAfter);
+	
+		const containedText = includeBeforeAfterText(fixedSelectionRange, lengthBefore, lengthAfter);
+		return containedText.startsWith(formattingBefore) && containedText.endsWith(formattingAfter);
+	}
+
 	function updateStyleFormat(textBeforeSelection, textAfterSelection){
 		const selectionRange = selectionRangeFixedStartEnd();
 		const selection = editor.getSelection();
 
 		const lengthBefore = textBeforeSelection.length;
 		const lengthAfter = textAfterSelection.length;
-		const containedText = includeBeforeAfterText(selectionRange, lengthBefore, lengthAfter);
-
-		if (containedText.startsWith(textBeforeSelection) && containedText.endsWith(textAfterSelection)) {
+		if (insideFormatting(selectionRange, textBeforeSelection, textAfterSelection)) {
+			// remove formatting
 			editor.replaceRange(
 				selection,
 				{
@@ -136,6 +191,7 @@
 			);
 		}
 		else {
+			// add formatting
 			editor.replaceSelection(textBeforeSelection + selection + textAfterSelection, selection);
 
 			editor.setSelection(
@@ -193,16 +249,80 @@
 		// cursor = cm.getCursor();
 	}
 
+	function getVisibleText(text) {
+		// console.log(editor.getViewport());
+		const rect = editor.getWrapperElement().getBoundingClientRect();
+		const topVisibleLine = editor.lineAtHeight(rect.top, "window");
+		const bottomVisibleLine = editor.lineAtHeight(rect.bottom, "window");
+		const lines = text.split('\n');
+		let lineTop = topVisibleLine;
+		let lineBottom = bottomVisibleLine;
+		let insideEmbed = false;
+		for (let i = topVisibleLine; i < lines.length; i++) {
+			if (lines[i].startsWith('.')) {
+				insideEmbed = lines[i].startsWith('.embed:json') ? true : false; 
+				break;
+			}
+		}
+		if (insideEmbed) {
+			for (let i = topVisibleLine; i > 0; i--) {
+				if (lines[i].startsWith('.')) {
+					lineTop = i;
+					break;
+				}
+			}
+		}
+		// } else {
+		// 	if (lines[lineTop].startsWith('.embed')) {
+		// 		console.log("embed start");
+		// 	}
+		// }
+		for (let i = topVisibleLine; i > 0; i--) {
+			if (lines[i].startsWith('.')) {
+				lineTop = i;
+				break;
+			}
+		}
+		for (let i = bottomVisibleLine; i < lines.length; i++) {
+			if (lines[i].startsWith('.')) {
+				// lineBotom = bottomVisibleLine + i * 2;
+				lineBottom = i + 1;
+				// console.log(lines[i-1]);
+				break;
+			}
+		}
+		// console.log(`${topVisibleLine} + ${bottomVisibleLine} -> ${lineTop} + ${lineBottom}`);
+		// return lines.slice(topVisibleLine, bottomVisibleLine).join('\n');
+		let visLines = lines.slice(lineTop, lineBottom)
+		// visLines += '\n.\nEND';
+		// console.log(visLines);
+		if (visLines[0].startsWith('.embed:json')) {
+			visLines.shift();
+		}
+		return visLines.join('\n');
+	}
+
 	function updater(cm, change) {
 		// console.log(change);
 		const originalText = cm.getValue();
+		// console.log(getVisibleText(originalText));
+		// const visibleText = getVisibleText(cm.getValue());
+
+
 		const { formattedText, newCursorPosition } = autoformatText(originalText, cm.getCursor());
-		// text = formattedText;
-		$text = formattedText;
+		// const { formattedText, newCursorPosition } = autoformatText(visibleText, cm.getCursor());
+		
 		if (originalText != formattedText) {
+		// if (visibleText != formattedText) {
 			cm.setValue(formattedText);
 			cm.setCursor(newCursorPosition);
 		}
+		$text = formattedText;
+	}
+
+	function viewportChanger(cm) {
+		visibleText = getVisibleText(validText);
+		// $text = visibleText;
 	}
 
 	function debug() {
@@ -243,17 +363,27 @@ ${fields.join(',\n')}
 <main>
 	<div class='flex flex-col h-screen bg-indigo-400'>
 		<!-- <div class='flex flex-col h-screen bg-cyan-800'> -->
-		<Toolbar on:bold={bold} on:italic={italic} on:generateToC={generateToC} />
-        <div class='flex-grow flex flex-row overflow-auto'>
-            <div class='w-1/2 ml-4 mr-2 mb-4 flex flex-col'>
-                <!-- <textarea id="input" class=" scroll-container resize-none outline-none p-3 bg-slate-700 text-slate-50 text-clip">{text}</textarea> -->
-				<textarea id="input" class="">{$text}</textarea>
-				<ErrorView text={$text} on:noCriticalErrors={validateText}/>
-            </div>
-            <div id='myel' class='w-1/2 mr-4 ml-2 mb-4 overflow-auto scroll-container'>
-				<DiscordView text={validText}/>
-            </div>
-        </div>
+		
+			<Toolbar on:bold={bold} on:italic={italic} on:generateToC={generateToC} />
+			<div class='flex-grow flex flex-row overflow-auto'>
+				<div class='w-1/2 ml-4 mr-2 mb-4 flex flex-col'>
+					<!-- <textarea id="input" class=" scroll-container resize-none outline-none p-3 bg-slate-700 text-slate-50 text-clip">{text}</textarea> -->
+					<textarea id="input" class=""></textarea>
+					<ErrorView text={$text} on:noCriticalErrors={validateText}/>
+				</div>
+				<div class='w-1/2 mr-4 ml-2 mb-4 overflow-auto'>
+					{#await populateConstants()}
+						<div class='w-1/2 bg-slate-50 flex-grow'>
+							<p>Waiting for channels, users, and prices to load...</p>
+						</div>
+					{:then}
+						<!-- <TempComponent text={validText}></TempComponent> -->
+						<DiscordView text={visibleText}/>
+					{:catch error}
+						<p style="color: red">{error.message}</p>
+					{/await}
+				</div>
+			</div>
     </div>
 </main>
 
@@ -289,5 +419,8 @@ ${fields.join(',\n')}
 	.cm-s-material .CodeMirror-linenumber {
 		color: #839496 !important;
 	} */
+	.cm-s-dracula .CodeMirror-activeline-background { background: rgba(255,255,255,0.05) !important; }
+	/* .cm-s-dracula .CodeMirror-selected { background: rgba(255, 255, 255, 0.25) !important; } */
+	.cm-s-dracula div.CodeMirror-selected { background: #214283 !important; }
 
 </style>

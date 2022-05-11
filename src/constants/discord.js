@@ -2,7 +2,7 @@ export const avatarURL = 'https://cdn.discordapp.com/avatars/689197754584399963/
 export const username = 'PvM Encyclopedia';
 
 export let channels = {};
-export let users = {'108682527304060928': 'FriggityFrank'};
+export let users = {};
 export let roles = {};
 
 export let pvmeSpreadsheet = {};
@@ -13,10 +13,10 @@ export let rolesFormat = {};
 export let emojisFormat = {};
 
 export async function populateConstants() {
-    // await new Promise(r => setTimeout(r, 5000));
+    // await new Promise(r => setTimeout(r, 2000));
     await setChannels();
     await setRoles();
-    // await setUsers();
+    await setUsers();
     await setPvmeSpreadsheet();
     await setEmojis();
 }
@@ -55,12 +55,14 @@ async function setRoles() {
     }
 }
 
-// async function setUsers() {
-//     users = {};
-//     for (const user of rolesJSON) {
-//         roles[role.id] = role.name;
-//     }
-// }
+async function setUsers() {
+    const usersJSON = await rawGithubGetRequest('https://raw.githubusercontent.com/Towsti/pvme-settings/master/users.json');
+    users = usersFormat = {};
+    for (const user of usersJSON) {
+        users[user.id] = user.name;
+        usersFormat[user.name.toLowerCase()] = user.id;
+    }
+}
 
 async function setEmojis() {
     const emojisJSON = await rawGithubGetRequest('https://raw.githubusercontent.com/pvme/rotation-builder/main/settings.json');

@@ -2,7 +2,7 @@
     import Message from './Message.svelte';
     import Avatar from './Avatar.svelte';
     import Bot from './Bot.svelte';
-    import { populateConstants } from './../constants/discord';
+    // import { populateConstants } from './../constants/discord';
 
     export let text;
     // $: discordMessages = splitMessages(text);
@@ -41,31 +41,22 @@
 
 </script>
 
-<div class='h-full'>
-    <div class='discord-view'>
-        <div class='flex-vertical whitney theme-dark'>
-            <div class='chat flex-vertical flex-spacer'>
-                <div class='content flex-spacer flex-horizontal'>
-                    <div class='flex-spacer flex-vertical messages-wrapper'>
-                        <div class='scroller-wrap'>
-                            <div class='scroller messages'>
-                                <div class='message-group hide-overflow'>
-                                    <Avatar/>
-                                    <div class='comment'>
-                                        <div class='message first'>
-                                            <Bot/>
-                                            {#await populateConstants()}
-                                                <p>Waiting for channels, users, and prices to load...</p>
-                                            {:then}
-                                            <!-- {#if discordMessages} -->
-                                                {#each splitMessages(text) as message}
-                                                    <Message {...message}/>
-                                                {/each}
-                                            <!-- {/if} -->
-                                            {:catch error}
-                                                <p style="color: red">{error.message}</p>
-                                            {/await}
-                                        </div>
+<!-- <div class='h-full'> -->
+<div class='discord-view'>
+    <div class='flex-vertical whitney theme-dark'>
+        <div class='chat flex-vertical flex-spacer'>
+            <div class='content flex-spacer flex-horizontal'>
+                <div class='flex-spacer flex-vertical messages-wrapper'>
+                    <div class='scroller-wrap'>
+                        <div class='scroller messages'>
+                            <div class='message-group hide-overflow min-h-screen'>
+                                <Avatar/>
+                                <div class='comment'>
+                                    <div class='message first'>
+                                        <Bot/>
+                                        {#each splitMessages(text) as message}
+                                            <Message {...message}/>
+                                        {/each}
                                     </div>
                                 </div>
                             </div>
@@ -76,6 +67,7 @@
         </div>
     </div>
 </div>
+<!-- </div> -->
 
 <!-- <div class='overflow-auto w-full h-full rounded-lg border-2 border-slate-900 scrollbar-thin scrollbar-thumb-slate-900'>
 <div class='discord-view'>

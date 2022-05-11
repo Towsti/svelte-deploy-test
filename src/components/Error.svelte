@@ -44,6 +44,7 @@
         font-size: 14px;
 
         color: #f8f8f2;
-        font-family: monospace;
+        /* font-family: monospace; */
+        /* font-family: Consolas, Menlo, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif; */
     }
 </style>
