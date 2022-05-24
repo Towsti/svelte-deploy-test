@@ -11,9 +11,11 @@
 	import TypeH2 from 'svelte-bootstrap-icons/lib/TypeH2';
 	import ListUl from 'svelte-bootstrap-icons/lib/ListUl';
 	import ListOl from 'svelte-bootstrap-icons/lib/ListOl';
+    import Table from 'svelte-bootstrap-icons/lib/Table';
 
     import GroupButton from './GroupButton.svelte';
     import ButtonGroup from './ButtonGroup.svelte';
+    import CommandDropdown from './CommandDropdown.svelte';
 
     const dispatch = createEventDispatcher();
 </script>
@@ -31,29 +33,25 @@
 		<GroupButton on:click={() => dispatch('h2')} title='Header 2' corner={'rounded-r'}><TypeH2/></GroupButton>
     </ButtonGroup>
 
+    <ButtonGroup>
+        <GroupButton on:click={() => dispatch('unorderedList')} title='Unordered list' corner={'rounded-l'}><ListUl/></GroupButton>
+		<GroupButton on:click={() => dispatch('orderedList')} title='Ordered list' corner={'rounded-r'}><ListOl/></GroupButton>
+    </ButtonGroup>
+
+    <ButtonGroup>
+        <GroupButton on:click={() => dispatch('inlineCode')} title='Inline Code' corner={'rounded-l'}><Code/></GroupButton>
+		<GroupButton on:click={() => dispatch('codeBlock')} title='Code block' corner={'rounded-r'}><CodeSquare/></GroupButton>
+    </ButtonGroup>
+
+    <ButtonGroup>
+        <GroupButton on:click={() => dispatch('pvmeSpreadsheet')} title='PVME Spreadsheet' corner={'rounded'}><Table/></GroupButton>
+    </ButtonGroup>
+
+    <CommandDropdown></CommandDropdown>
+    
     <!-- <ButtonGroup>
-        <GroupButton on:click={() => dispatch('debug')} corner={'rounded-l'}><ListUl/></GroupButton>
-		<GroupButton on:click={() => dispatch('debug')} corner={'rounded-r'}><ListOl/></GroupButton>
-    </ButtonGroup> -->
-    <ButtonGroup>
-        <GroupButton on:click={() => dispatch('bold')} corner={'rounded-l'}>⬥</GroupButton>
-        <GroupButton on:click={() => dispatch('italic')}>•</GroupButton>
-        <GroupButton on:click={() => dispatch('strikethrough')} corner={'rounded-r'}>-</GroupButton>
-    </ButtonGroup>
-
-    <ButtonGroup>
-        <GroupButton on:click={() => dispatch('bold')} corner={'rounded-l'}>1</GroupButton>
-        <GroupButton on:click={() => dispatch('strikethrough')} corner={'rounded-r'}>a</GroupButton>
-    </ButtonGroup>
-
-    <ButtonGroup>
-        <GroupButton on:click={() => dispatch('debug')} title='Inline Code' corner={'rounded-l'}><Code/></GroupButton>
-		<GroupButton on:click={() => dispatch('debug')} corner={'rounded-r'}><CodeSquare/></GroupButton>
-    </ButtonGroup>
-
-    <ButtonGroup>
         <GroupButton on:click={() => dispatch('generateToC')} corner={'rounded'}>Generate table of contents</GroupButton>
-    </ButtonGroup>
+    </ButtonGroup> -->
 </div>
 
 

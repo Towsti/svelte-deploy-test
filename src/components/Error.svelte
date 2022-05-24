@@ -1,4 +1,6 @@
 <script>
+    import { slide } from 'svelte/transition';
+
     export let error;
 
     function formatErrorLine(line) {
@@ -25,7 +27,7 @@
 
 <!-- todo: individual line, type, text variable -->
 <!-- {@html formatErrorEmoji(error.type)} {formatErrorLine(error.line)} - {error.text}<br> -->
-
+<!-- <div transition:slide|local> -->
 <tr>
     <!-- <td>{@html formatErrorEmoji(error.type)}</td>
     <td>{formatErrorLine(error.line)}</td>
@@ -33,6 +35,7 @@
     <td>{formatErrorLine(error.line)}</td>
     <td>{@html formatErrorEmoji(error.type)} {error.text}</td>
 </tr>
+<!-- </div> -->
 
 <style>
     td {

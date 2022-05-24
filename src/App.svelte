@@ -18,25 +18,26 @@
 
 	import CodeMirror from 'codemirror';
 	import { onMount } from 'svelte';
-	import Toolbar from './components/Toolbar.svelte';
+	// import Toolbar from './components/Toolbar.svelte';
+	import Toolbar from './components/toolbar/Toolbar.svelte';
 	import ScrollSync from 'scroll-sync'
 	
 
 	import autoformatText from './autoformat'; 
 
-	import { persist, localStorage } from '@macfja/svelte-persistent-store';
-	import { writable } from 'svelte/store';
+	// import { persist, localStorage } from '@macfja/svelte-persistent-store';
+	// import { writable } from 'svelte/store';
 	import { populateConstants } from './constants/discord';
 
 	import TempComponent from './components/TempComponent.svelte';
+	import { text } from './stores';
 
 	let editor;
 	// let text = defaultText;
-	let text = persist(writable(defaultText), localStorage(), 'text');
+	// let text = persist(writable(defaultText), localStorage(), 'text');
 	let validText = $text;	//  bug: exiting last session with invalid text
 	let cursor = 0; 
 	let visibleText = validText;
-	
 
 	onMount(()=>{
 		// const ss = new ScrollSync({
@@ -55,7 +56,7 @@
 			autoCloseBrackets: true,
   			matchBrackets: true,
 			autofocus: true,
-			// tabSize: 4	
+			tabSize: 2,	
 			cursorScrollMargin: 12,
 			showTrailingSpace: true,
 			styleActiveLine: true,
@@ -224,16 +225,63 @@
 		updateStyleFormat('~~', '~~');
 	}
 
+	function updateSingleLineStyleFormat(lineStartText, lineEndText='') {
+		const selection = selectionRangeFixedStartEnd();
+		const selectedLineText = editor.getLine(selection.start.line);
+		if (selectedLineText.startsWith(lineStartText) && selectedLineText.endsWith(lineEndText)) {
+			editor.replaceRange(selectedLineText.substring("1. ".length), 
+				{
+					line: selection.start.line, 
+					ch: 0
+				}, 
+				{
+					line: selection.start.line, 
+					ch: selectedLineText.length
+				}
+			);
+		}
+		else {
+			editor.replaceRange('1. ', 
+				{
+					line: selection.start.line, 
+					ch: 0
+				}
+			);
+		}
+		editor.focus();
+	}
+
 	function h1() {
-		updateStyleFormat('> __**', '**__');
+		updateSingleLineStyleFormat('> __**', '**__');	
 	}
 
 	function h2() {
-		updateStyleFormat('__**', '**__');
+		// updateStyleFormat('__**', '**__');
 	}
 
 	function inlineCode() {
 		updateStyleFormat('\`', '\`');
+	}
+
+	function codeBlock() {
+		updateStyleFormat('\`\`\`', '\`\`\`');
+	}
+
+	function unorderedList() {
+		updateSingleLineStyleFormat('⬥ ');	
+	}
+
+	function orderedList() {
+		const selection = selectionRangeFixedStartEnd();
+		const selectedLineText = editor.getLine(selection.start.line);
+		if (selectedLineText.startsWith("1. ")) {
+			editor.replaceRange(selectedLineText.substring("1. ".length), {line: selection.start.line, ch: 0}, {line: selection.start.line, ch: selectedLineText.length});
+		}
+		else {
+			editor.replaceRange('1. ', {line: selection.start.line, ch: 0});
+
+		}
+		editor.focus();
 	}
 
 	function setCursor(e) {
@@ -327,6 +375,16 @@
 
 	function debug() {
 		console.log("debug");
+		
+		// const line = editor.getLine(editor.getLineNumber());
+		// if (line === '') {
+		// 	editor.replaceRange('⬥ ', {line: line, ch: 0}, {line: line, ch: 2});
+		// }
+		// editor.focus();
+		// const selection = selectionRangeFixedStartEnd();
+		// editor.replaceRange('⬥ ', {line: selection.start.line, ch: 0}, {line: selection.start.line, ch: 0});
+
+		editor.focus();
 	}
 
 	function generateToC() {
@@ -364,11 +422,22 @@ ${fields.join(',\n')}
 	<div class='flex flex-col h-screen bg-indigo-400'>
 		<!-- <div class='flex flex-col h-screen bg-cyan-800'> -->
 		
-			<Toolbar on:bold={bold} on:italic={italic} on:generateToC={generateToC} />
+			<!-- <Toolbar 
+			on:bold={bold} 
+			on:italic={italic} 
+			on:underline={underline} 
+			on:strikethrough={strikethrough} 
+			on:inlineCode={inlineCode} 
+			on:codeBlock={codeBlock} 
+			on:unorderedList={unorderedList} 
+			on:orderedList={orderedList} 
+			on:generateToC={generateToC}/> -->
+			<Toolbar on:h1={h1} on:h2={h2} on:unorderedList={unorderedList} on:orderedList={orderedList} on:debug={debug}></Toolbar>
+
 			<div class='flex-grow flex flex-row overflow-auto'>
 				<div class='w-1/2 ml-4 mr-2 mb-4 flex flex-col'>
 					<!-- <textarea id="input" class=" scroll-container resize-none outline-none p-3 bg-slate-700 text-slate-50 text-clip">{text}</textarea> -->
-					<textarea id="input" class=""></textarea>
+					<textarea id="input"></textarea>
 					<ErrorView text={$text} on:noCriticalErrors={validateText}/>
 				</div>
 				<div class='w-1/2 mr-4 ml-2 mb-4 overflow-auto'>
@@ -378,7 +447,7 @@ ${fields.join(',\n')}
 						</div>
 					{:then}
 						<!-- <TempComponent text={validText}></TempComponent> -->
-						<DiscordView text={visibleText}/>
+						<!-- <DiscordView text={visibleText}/> -->
 					{:catch error}
 						<p style="color: red">{error.message}</p>
 					{/await}
@@ -391,6 +460,22 @@ ${fields.join(',\n')}
 	@tailwind base;
 	@tailwind components;
 	@tailwind utilities;
+
+/* ::-webkit-scrollbar {
+  width: 10px;
+} */
+
+/* ::-webkit-scrollbar-track {
+  background: #888; 
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #555; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+} */
 
 	.CodeMirror {
 		/* font-family: Arial, monospace; */
