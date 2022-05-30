@@ -228,8 +228,11 @@
 	function updateSingleLineStyleFormat(lineStartText, lineEndText='') {
 		const selection = selectionRangeFixedStartEnd();
 		const selectedLineText = editor.getLine(selection.start.line);
+		const lengthStartText = lineStartText.length;
+		const lengthEndText = lineEndText.length;
+
 		if (selectedLineText.startsWith(lineStartText) && selectedLineText.endsWith(lineEndText)) {
-			editor.replaceRange(selectedLineText.substring("1. ".length), 
+			editor.replaceRange(selectedLineText.substring(lengthStartText), 
 				{
 					line: selection.start.line, 
 					ch: 0
@@ -241,7 +244,7 @@
 			);
 		}
 		else {
-			editor.replaceRange('1. ', 
+			editor.replaceRange(lineStartText, 
 				{
 					line: selection.start.line, 
 					ch: 0
@@ -256,7 +259,7 @@
 	}
 
 	function h2() {
-		// updateStyleFormat('__**', '**__');
+		updateSingleLineStyleFormat('__**', '**__');
 	}
 
 	function inlineCode() {
@@ -272,30 +275,31 @@
 	}
 
 	function orderedList() {
-		const selection = selectionRangeFixedStartEnd();
-		const selectedLineText = editor.getLine(selection.start.line);
-		if (selectedLineText.startsWith("1. ")) {
-			editor.replaceRange(selectedLineText.substring("1. ".length), {line: selection.start.line, ch: 0}, {line: selection.start.line, ch: selectedLineText.length});
-		}
-		else {
-			editor.replaceRange('1. ', {line: selection.start.line, ch: 0});
+		// const selection = selectionRangeFixedStartEnd();
+		// const selectedLineText = editor.getLine(selection.start.line);
+		// if (selectedLineText.startsWith("1. ")) {
+		// 	editor.replaceRange(selectedLineText.substring("1. ".length), {line: selection.start.line, ch: 0}, {line: selection.start.line, ch: selectedLineText.length});
+		// }
+		// else {
+		// 	editor.replaceRange('1. ', {line: selection.start.line, ch: 0});
 
-		}
-		editor.focus();
+		// }
+		// editor.focus();
+		updateSingleLineStyleFormat('1. ');	
 	}
 
 	function setCursor(e) {
 		cursor = e.target.selectionStart;
 	}
 
-	function scrollPosition(e) {
-		const scrollView = document.getElementById('scrollView1');		
-	}
+	// function scrollPosition(e) {
+	// 	const scrollView = document.getElementById('scrollView1');		
+	// }
 
-	function cursorMoved(cm) {
-		// console.log(cm);
-		// cursor = cm.getCursor();
-	}
+	// function cursorMoved(cm) {
+	// 	// console.log(cm);
+	// 	// cursor = cm.getCursor();
+	// }
 
 	function getVisibleText(text) {
 		// console.log(editor.getViewport());
@@ -384,36 +388,6 @@
 		// const selection = selectionRangeFixedStartEnd();
 		// editor.replaceRange('⬥ ', {line: selection.start.line, ch: 0}, {line: selection.start.line, ch: 0});
 
-		editor.focus();
-	}
-
-	function generateToC() {
-		// .tag:introduction
-		const regexp = /\n.tag:([^\n]+)/g;
-		const results = [...text.matchAll(regexp)];
-		let fields = [];
-		for (const result of results){
-			fields.push(`      {
-        "name": "__${result[1]}__",
-        "value": "[Link]($linkmsg_${result[1]}$)",
-        "inline": true
-      }`);
-		}
-		
-		let tocEmbed = `
-{
-  "embed": {
-    "title": "Table of Contents",
-    "color": 39423,
-    "fields": [
-${fields.join(',\n')}
-    ]
-  }
-}
-.embed:json`;
-		editor.setCursor({line: editor.lastLine()});
-		editor.setValue(text + tocEmbed);
-		editor.setCursor({line: editor.lastLine()});
 		editor.focus();
 	}
 </script>
