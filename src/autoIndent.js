@@ -148,7 +148,6 @@ and my own modifications for different bullet types, alphabetical character incr
             var nextLine = cm.getLine(nextLineNumber), nextItem = listRE.exec(nextLine);
 
             if (nextItem) {
-                console.log(nextItem);
                 var nextIndent = nextItem[1];
                 var newNumber = startItem[3].charCodeAt(0) + lookAhead - skipCount;
                 var nextNumber = startItem[3].charCodeAt(0), 
@@ -201,7 +200,6 @@ and my own modifications for different bullet types, alphabetical character incr
     };
 
     function getAlphaNumericalType(ch) {
-        console.log(ch);
         if (ch <= 0) return '1.';
         if (ch === 4) return 'a.';
         return '-';
@@ -229,7 +227,6 @@ and my own modifications for different bullet types, alphabetical character incr
                 cm.indentLine(pos.line, -4);
 
                 if (unorderedListRE.test(match[2])) {
-                    console.log(lastIndentCharacter)
                     if (lastIndentCharacter)
                         cm.replaceRange(getAlphaNumericalType(pos.ch - 6), { line: pos.line, ch: pos.ch - 6 }, { line: pos.line, ch: pos.ch - 5 });
                     else

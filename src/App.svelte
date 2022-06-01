@@ -232,7 +232,7 @@
 		const lengthEndText = lineEndText.length;
 
 		if (selectedLineText.startsWith(lineStartText) && selectedLineText.endsWith(lineEndText)) {
-			editor.replaceRange(selectedLineText.substring(lengthStartText), 
+			editor.replaceRange(selectedLineText.substring(lengthStartText, selectedLineText.length - lengthEndText), 
 				{
 					line: selection.start.line, 
 					ch: 0
@@ -244,12 +244,24 @@
 			);
 		}
 		else {
-			editor.replaceRange(lineStartText, 
+			editor.replaceRange(lineStartText + selectedLineText + lineEndText, 
 				{
 					line: selection.start.line, 
 					ch: 0
+				},
+				{
+					line: selection.start.line, 
+					ch: selectedLineText.length
 				}
 			);
+			
+			// if (selectedLineText === '') {
+				// don't place the cursor at the end of the line when changing a single line
+			editor.setSelection({
+				line: selection.start.line,
+				ch: selectedLineText.length + lengthStartText + (selectedLineText === '' ? 0 : lengthEndText)
+			});
+			// }
 		}
 		editor.focus();
 	}
