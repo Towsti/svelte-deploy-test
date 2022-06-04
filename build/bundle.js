@@ -72695,7 +72695,8 @@ __**Changes to Style Guide**__
       var ie_version = ie && (ie_upto10 ? document.documentMode || 6 : +(edge || ie_11up)[1]);
       var webkit = !edge && /WebKit\//.test(userAgent);
       var qtwebkit = webkit && /Qt\/\d+\.\d+/.test(userAgent);
-      var chrome = !edge && /Chrome\//.test(userAgent);
+      var chrome = !edge && /Chrome\/(\d+)/.exec(userAgent);
+      var chrome_version = chrome && +chrome[1];
       var presto = /Opera\//.test(userAgent);
       var safari = /Apple Computer/.test(navigator.vendor);
       var mac_geMountainLion = /Mac OS X 1\d\D([8-9]|\d\d)\D/.test(userAgent);
@@ -77178,6 +77179,17 @@ __**Changes to Style Guide**__
       }
 
       function onScrollWheel(cm, e) {
+        // On Chrome 102, viewport updates somehow stop wheel-based
+        // scrolling. Turning off pointer events during the scroll seems
+        // to avoid the issue.
+        if (chrome && chrome_version >= 102) {
+          if (cm.display.chromeScrollHack == null) { cm.display.sizer.style.pointerEvents = "none"; }
+          else { clearTimeout(cm.display.chromeScrollHack); }
+          cm.display.chromeScrollHack = setTimeout(function () {
+            cm.display.chromeScrollHack = null;
+            cm.display.sizer.style.pointerEvents = "";
+          }, 100);
+        }
         var delta = wheelEventDelta(e), dx = delta.x, dy = delta.y;
         var pixelsPerUnit = wheelPixelsPerUnit;
         if (e.deltaMode === 0) {
@@ -80866,7 +80878,7 @@ __**Changes to Style Guide**__
         var pasted = e.clipboardData && e.clipboardData.getData("Text");
         if (pasted) {
           e.preventDefault();
-          if (!cm.isReadOnly() && !cm.options.disableInput)
+          if (!cm.isReadOnly() && !cm.options.disableInput && cm.hasFocus())
             { runInOp(cm, function () { return applyTextInput(cm, pasted, 0, null, "paste"); }); }
           return true
         }
@@ -82511,7 +82523,7 @@ __**Changes to Style Guide**__
 
       addLegacyProps(CodeMirror);
 
-      CodeMirror.version = "5.65.3";
+      CodeMirror.version = "5.65.5";
 
       return CodeMirror;
 
@@ -83113,7 +83125,6 @@ __**Changes to Style Guide**__
                 var nextLine = cm.getLine(nextLineNumber), nextItem = listRE.exec(nextLine);
 
                 if (nextItem) {
-                    console.log(nextItem);
                     var nextIndent = nextItem[1];
                     var newNumber = startItem[3].charCodeAt(0) + lookAhead - skipCount;
                     var nextNumber = startItem[3].charCodeAt(0), 
@@ -83166,7 +83177,6 @@ __**Changes to Style Guide**__
         };
 
         function getAlphaNumericalType(ch) {
-            console.log(ch);
             if (ch <= 0) return '1.';
             if (ch === 4) return 'a.';
             return '-';
@@ -83194,7 +83204,6 @@ __**Changes to Style Guide**__
                     cm.indentLine(pos.line, -4);
 
                     if (unorderedListRE.test(match[2])) {
-                        console.log(lastIndentCharacter);
                         if (lastIndentCharacter)
                             cm.replaceRange(getAlphaNumericalType(pos.ch - 6), { line: pos.line, ch: pos.ch - 6 }, { line: pos.line, ch: pos.ch - 5 });
                         else
@@ -90450,7 +90459,7 @@ ${fields.join(',\n')}
     	return block;
     }
 
-    // (36:8) <Button on:click={() => dispatch('h1')} title='Header 1' corner={'rounded-l'}>
+    // (36:8) <Button on:click={() => dispatch('h1')} title='Header 1 - Ctrl+Alt+1' corner={'rounded-l'}>
     function create_default_slot_15(ctx) {
     	let typeh1;
     	let current;
@@ -90482,14 +90491,14 @@ ${fields.join(',\n')}
     		block,
     		id: create_default_slot_15.name,
     		type: "slot",
-    		source: "(36:8) <Button on:click={() => dispatch('h1')} title='Header 1' corner={'rounded-l'}>",
+    		source: "(36:8) <Button on:click={() => dispatch('h1')} title='Header 1 - Ctrl+Alt+1' corner={'rounded-l'}>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (37:2) <Button on:click={() => dispatch('h2')} title='Header 2' corner={'rounded-r'}>
+    // (37:2) <Button on:click={() => dispatch('h2')} title='Header 2  - Ctrl+Alt+2' corner={'rounded-r'}>
     function create_default_slot_14(ctx) {
     	let typeh2;
     	let current;
@@ -90521,7 +90530,7 @@ ${fields.join(',\n')}
     		block,
     		id: create_default_slot_14.name,
     		type: "slot",
-    		source: "(37:2) <Button on:click={() => dispatch('h2')} title='Header 2' corner={'rounded-r'}>",
+    		source: "(37:2) <Button on:click={() => dispatch('h2')} title='Header 2  - Ctrl+Alt+2' corner={'rounded-r'}>",
     		ctx
     	});
 
@@ -90537,7 +90546,7 @@ ${fields.join(',\n')}
 
     	button0 = new Button({
     			props: {
-    				title: "Header 1",
+    				title: "Header 1 - Ctrl+Alt+1",
     				corner: 'rounded-l',
     				$$slots: { default: [create_default_slot_15] },
     				$$scope: { ctx }
@@ -90549,7 +90558,7 @@ ${fields.join(',\n')}
 
     	button1 = new Button({
     			props: {
-    				title: "Header 2",
+    				title: "Header 2  - Ctrl+Alt+2",
     				corner: 'rounded-r',
     				$$slots: { default: [create_default_slot_14] },
     				$$scope: { ctx }
@@ -91365,7 +91374,7 @@ ${fields.join(',\n')}
     			create_component(button1.$$.fragment);
     			attr_dev(div0, "class", "inline-flex rounded-md shadow-sm mb-2 mx-2 ml-auto");
     			attr_dev(div0, "role", "group");
-    			add_location(div0, file$2, 67, 4, 3167);
+    			add_location(div0, file$2, 67, 4, 3194);
     			attr_dev(div1, "class", "flex flex-wrap mt-4 mb-2 mx-2");
     			add_location(div1, file$2, 27, 0, 1234);
     		},
@@ -91593,69 +91602,66 @@ ${fields.join(',\n')}
     !function(e,t){module.exports=t();}(self,(function(){return e={138:e=>{const t=function(e){return [document,document.documentElement].includes(e)?document:e},o=function(e,...o){t(e).addEventListener(...o);},n=function(e,...o){t(e).removeEventListener(...o);};e.exports=class{constructor(e={}){const{disabled:t=!1,relative:o=!0,doms:n=[]}=e;this.doms=[...n],this.disabled=t,this.relative=o,this.syncData=[],this.autoSync();}add(e=[]){if(!e&&!e.length)throw Error("Please enter the element or element group.");this.clearSync(),this.doms=this.doms.concat(e),this.autoSync();}remove(e=[]){if(!e&&!e.length)throw Error("Please enter the element or element group.");const t=[].concat(e);this.clearSync(),this.doms=this.doms.filter((e=>!t.includes(e))),this.autoSync();}set(e=[]){if(!e&&!e.length)throw Error("Please enter the element or element group.");this.clearSync(),this.doms=[].concat(e),this.autoSync();}clearSync(){this.syncData.forEach((e=>{n(e.el,"scroll",e.event);})),this.syncData=[];}autoSync(){this.clearSync(),this.doms.forEach(((e,t)=>{const r=e=>{if(this.disabled)return;const{scrollWidth:t,scrollHeight:r,scrollLeft:l,scrollTop:s,clientWidth:c,clientHeight:i}=e.target.documentElement||e.target;this.syncData.filter((t=>t.el!==e.target)).forEach((a=>{if(clearTimeout(a.timer),n(a.el,"scroll",a.event),this.relative){const e=l/(t-c),o=s/(r-i),{scrollWidth:n,scrollHeight:h,clientWidth:d,clientHeight:m}=a.el.documentElement||a.el;(a.el.documentElement||a.el).scrollTo((n-d)*e,(h-m)*o);}else (a.el.documentElement||a.el).scrollTo(e.target.scrollLeft,e.target.scrollTop);a.timer=setTimeout((()=>{o(a.el,"scroll",a.event);}),50);}));};this.syncData.push({el:e,event:r}),o(e,"scroll",r);}));}};}},t={},function o(n){var r=t[n];if(void 0!==r)return r.exports;var l=t[n]={exports:{}};return e[n](l,l.exports,o),l.exports}(138);var e,t;}));
     });
 
-    // todo: duplicate code and shared code with markdown.js
-
-
-    String.prototype.replaceAt = function(startIndex, replacement, endIndex) {
-        return this.substring(0, startIndex) + replacement + this.substring(endIndex);
-    };
-
-    function formatEmojis(text) {
+    function formatEmojis(cm) {
         /* Format named emojis (or aliases) to emoji ID's. 
         INPUT: "text ;gbarge; more text ;greaterbarge;" 
         OUTPUT: "text <:gbarge:1234> more text <:gbarge:1234>" */
-        let formattedText = text;
+        const formattedText = cm.getValue();
         const regexp = /;([^;]+);/g;
         const results = [...formattedText.matchAll(regexp)];
         for (const result of results.reverse()) {
             const [match, name] = result;
-            const startIndex = result.index;
-            const endIndex = startIndex + match.length;
             const emoji = emojisFormat[name.toLowerCase()];
-            if (emoji)
-                formattedText = formattedText.replaceAt(startIndex, emoji, endIndex);
+            if (emoji) {
+                const cursor = getCursorFromIndex(formattedText, result.index);
+                cm.replaceRange(emoji, cursor, {line: cursor.line, ch: cursor.ch + match.length});
+            }
         }
-        return formattedText;
     }
 
-    function formatChannels(text) {
+    function formatChannels(cm) {
         /* Format named channels to channel ID's. 
         INPUT: "text ;#eD2-hydrix-drAgOns; more text" 
         OUTPUT: "text <#1234> more text" */
-        let formattedText = text;
+        const formattedText = cm.getValue();
         const regexp = /;#([^;]+);/g;
         const results = [...formattedText.matchAll(regexp)];
         for (const result of results.reverse()) {
             const [match, name] = result;
-            const startIndex = result.index;
-            const endIndex = startIndex + match.length;
             const channelID = channelsFormat[name.toLowerCase()];
-            if (channelID)
-                formattedText = formattedText.replaceAt(startIndex, `<#${channelID}>`, endIndex);
+            if (channelID) {
+                const cursor = getCursorFromIndex(formattedText, result.index);
+                cm.replaceRange(`<#${channelID}>`, cursor, {line: cursor.line, ch: cursor.ch + match.length});
+            }
         }
-        return formattedText;
     }
 
-    function formatRoles(text) {
+    function formatRoles(cm) {
         /* Format named roles to role ID's. 
         INPUT: "text ;@&helPer; more text" 
         OUTPUT: "text <@&1234> more text" */
-        let formattedText = text;
+        const formattedText = cm.getValue();
         const regexp = /;@&([^;]+);/g;
         const results = [...formattedText.matchAll(regexp)];
         for (const result of results.reverse()) {
             const [match, name] = result;
-            const startIndex = result.index;
-            const endIndex = startIndex + match.length;
             const roleID = rolesFormat[name.toLowerCase()];
-            if (roleID)
-                formattedText = formattedText.replaceAt(startIndex, `<@&${roleID}>`, endIndex);
+            if (roleID) {
+                const cursor = getCursorFromIndex(formattedText, result.index);
+                cm.replaceRange(`<@&${roleID}>`, cursor, {line: cursor.line, ch: cursor.ch + match.length});
+            }
         }
         return formattedText;
     }
 
-    function formatArrows(text) {
-        return text.replace(/->/g, '→');
+    function formatArrows(cm) {
+        let formattedText = cm.getValue();
+        const regexp = /->/g;
+        const results = [...formattedText.matchAll(regexp)];
+        for (const result of results.reverse()) {
+            const cursor = getCursorFromIndex(formattedText, result.index);
+            cm.replaceRange('→', cursor, {line: cursor.line, ch: cursor.ch + result.length + 1});
+        }
     }
 
     function getCursorFromIndex(text, index) {
@@ -91676,44 +91682,28 @@ ${fields.join(',\n')}
         return {line: cursorLine, ch: cursorChar};
     }
 
-    function reverse(str) {
-        /* Reverse a string.
-        INPUT: str = "hello world"
-        OUTPUT: "dlrow olleh" */
-        let reversed = "";
-        for (let i = str.length - 1; i >= 0; i--) {
-            reversed += str[i];
-        }
-        return reversed;
-    }
-
-    function getNewCursorPosition(originalText, formattedText, originalCursor) {
-        if (originalText == formattedText)
-            return originalCursor;
+    // function getNewCursorPosition(originalText, formattedText, originalCursor) {
+    //     if (originalText == formattedText)
+    //         return originalCursor;
         
-        const originalTextReversed = reverse(originalText);
-        const formattedTextReversed = reverse(formattedText);
-        let changeIndex;
-        for (let i=0; i < formattedTextReversed.length; i++) {
-            if (formattedTextReversed[i] != originalTextReversed[i]) {
-                changeIndex = formattedText.length - i;
-                break;
-            }
-        }
-        return getCursorFromIndex(formattedText, changeIndex);
-    }
+    //     const originalTextReversed = reverse(originalText);
+    //     const formattedTextReversed = reverse(formattedText);
+    //     let changeIndex;
+    //     for (let i=0; i < formattedTextReversed.length; i++) {
+    //         if (formattedTextReversed[i] != originalTextReversed[i]) {
+    //             changeIndex = formattedText.length - i;
+    //             break;
+    //         }
+    //     }
+    //     return getCursorFromIndex(formattedText, changeIndex);
+    // }
 
-    function autoformatText(text, cursor) {
-        let formattedText = text;
-        
+    function autoformatText(cm) {
         // ordered so that there are no false results (not mandatory but faster)
-        formattedText = formatArrows(formattedText);
-        formattedText = formatRoles(formattedText);
-        formattedText = formatChannels(formattedText);
-        formattedText = formatEmojis(formattedText);
-        
-        const newCursorPosition = getNewCursorPosition(text, formattedText, cursor);
-        return { formattedText, newCursorPosition}
+        formatArrows(cm);
+        formatRoles(cm);
+        formatChannels(cm);
+        formatEmojis(cm);
     }
 
     /* src\components\TempMsg.svelte generated by Svelte v3.48.0 */
@@ -92074,10 +92064,10 @@ ${fields.join(',\n')}
     const { Object: Object_1, console: console_1 } = globals;
     const file = "src\\App.svelte";
 
-    // (451:5) {:catch error}
+    // (458:5) {:catch error}
     function create_catch_block(ctx) {
     	let p;
-    	let t_value = /*error*/ ctx[27].message + "";
+    	let t_value = /*error*/ ctx[28].message + "";
     	let t;
 
     	const block = {
@@ -92085,7 +92075,7 @@ ${fields.join(',\n')}
     			p = element("p");
     			t = text$1(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file, 451, 6, 13253);
+    			add_location(p, file, 458, 6, 13694);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -92101,14 +92091,14 @@ ${fields.join(',\n')}
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(451:5) {:catch error}",
+    		source: "(458:5) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (448:5) {:then}
+    // (455:5) {:then}
     function create_then_block(ctx) {
     	const block = { c: noop, m: noop, p: noop, d: noop };
 
@@ -92116,14 +92106,14 @@ ${fields.join(',\n')}
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(448:5) {:then}",
+    		source: "(455:5) {:then}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (444:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}
+    // (451:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}
     function create_pending_block(ctx) {
     	let div;
     	let p;
@@ -92133,9 +92123,9 @@ ${fields.join(',\n')}
     			div = element("div");
     			p = element("p");
     			p.textContent = "Waiting for channels, users, and prices to load...";
-    			add_location(p, file, 445, 7, 13024);
+    			add_location(p, file, 452, 7, 13465);
     			attr_dev(div, "class", "w-1/2 bg-slate-50 flex-grow");
-    			add_location(div, file, 444, 6, 12974);
+    			add_location(div, file, 451, 6, 13415);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -92151,7 +92141,7 @@ ${fields.join(',\n')}
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(444:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}",
+    		source: "(451:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}",
     		ctx
     	});
 
@@ -92172,11 +92162,17 @@ ${fields.join(',\n')}
     	let div1;
     	let current;
     	toolbar = new Toolbar({ $$inline: true });
-    	toolbar.$on("h1", /*h1*/ ctx[2]);
-    	toolbar.$on("h2", h2);
-    	toolbar.$on("unorderedList", /*unorderedList*/ ctx[3]);
-    	toolbar.$on("orderedList", /*orderedList*/ ctx[4]);
-    	toolbar.$on("debug", /*debug*/ ctx[5]);
+    	toolbar.$on("bold", /*bold*/ ctx[2]);
+    	toolbar.$on("italic", /*italic*/ ctx[3]);
+    	toolbar.$on("underline", /*underline*/ ctx[4]);
+    	toolbar.$on("strikethrough", /*strikethrough*/ ctx[5]);
+    	toolbar.$on("h1", /*h1*/ ctx[6]);
+    	toolbar.$on("h2", /*h2*/ ctx[7]);
+    	toolbar.$on("unorderedList", /*unorderedList*/ ctx[10]);
+    	toolbar.$on("orderedList", /*orderedList*/ ctx[11]);
+    	toolbar.$on("inlineCode", /*inlineCode*/ ctx[8]);
+    	toolbar.$on("codeBlock", /*codeBlock*/ ctx[9]);
+    	toolbar.$on("debug", /*debug*/ ctx[12]);
 
     	errorview = new ErrorView({
     			props: { text: /*$text*/ ctx[0] },
@@ -92193,7 +92189,7 @@ ${fields.join(',\n')}
     		pending: create_pending_block,
     		then: create_then_block,
     		catch: create_catch_block,
-    		error: 27
+    		error: 28
     	};
 
     	handle_promise(populateConstants(), info);
@@ -92213,16 +92209,16 @@ ${fields.join(',\n')}
     			div1 = element("div");
     			info.block.c();
     			attr_dev(textarea, "id", "input");
-    			add_location(textarea, file, 439, 5, 12766);
+    			add_location(textarea, file, 446, 5, 13207);
     			attr_dev(div0, "class", "w-1/2 ml-4 mr-2 mb-4 flex flex-col");
-    			add_location(div0, file, 437, 4, 12565);
+    			add_location(div0, file, 444, 4, 13006);
     			attr_dev(div1, "class", "w-1/2 mr-4 ml-2 mb-4 overflow-auto");
-    			add_location(div1, file, 442, 4, 12883);
+    			add_location(div1, file, 449, 4, 13324);
     			attr_dev(div2, "class", "flex-grow flex flex-row overflow-auto");
-    			add_location(div2, file, 436, 3, 12508);
+    			add_location(div2, file, 443, 3, 12949);
     			attr_dev(div3, "class", "flex flex-col h-screen bg-indigo-400");
-    			add_location(div3, file, 421, 1, 11957);
-    			add_location(main, file, 420, 0, 11948);
+    			add_location(div3, file, 424, 1, 12363);
+    			add_location(main, file, 423, 0, 12354);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -92287,19 +92283,6 @@ ${fields.join(',\n')}
     	return fixedSelectionRange.end.line > fixedSelectionRange.start.line;
     }
 
-    function h2() {
-    	
-    } // updateStyleFormat('__**', '**__');
-
-    function scrollPosition(e) {
-    	document.getElementById('scrollView1');
-    }
-
-    function cursorMoved(cm) {
-    	
-    } // console.log(cm);
-    // cursor = cm.getCursor();
-
     function instance($$self, $$props, $$invalidate) {
     	let $text;
     	validate_store(text, 'text');
@@ -92342,12 +92325,15 @@ ${fields.join(',\n')}
     		editor.setSize('100%', '100%');
     		editor.on('change', updater);
     		editor.on('scroll', viewportChanger);
+    		editor.on('inputRead', newInput);
 
     		editor.setOption("extraKeys", {
     			'Ctrl-B': bold,
     			'Ctrl-I': italic,
     			'Ctrl-U': underline,
     			'Ctrl-Alt-S': strikethrough,
+    			'Ctrl-Alt-1': h1,
+    			'Ctrl-Alt-2': h2,
     			'Enter': 'newlineAndIndentContinueMarkdownList',
     			'Tab': 'autoIndentMarkdownList',
     			'Shift-Tab': 'autoUnindentMarkdownList'
@@ -92356,6 +92342,10 @@ ${fields.join(',\n')}
     		editor.setValue($text);
     		validateText();
     	});
+
+    	function newInput(cm, change) {
+    		autoformatText(cm);
+    	}
 
     	function validateText() {
     		validText = $text;
@@ -92490,21 +92480,37 @@ ${fields.join(',\n')}
     	function updateSingleLineStyleFormat(lineStartText, lineEndText = '') {
     		const selection = selectionRangeFixedStartEnd();
     		const selectedLineText = editor.getLine(selection.start.line);
+    		const lengthStartText = lineStartText.length;
+    		const lengthEndText = lineEndText.length;
 
     		if (selectedLineText.startsWith(lineStartText) && selectedLineText.endsWith(lineEndText)) {
-    			editor.replaceRange(selectedLineText.substring(("1. ").length), { line: selection.start.line, ch: 0 }, {
+    			editor.replaceRange(selectedLineText.substring(lengthStartText, selectedLineText.length - lengthEndText), { line: selection.start.line, ch: 0 }, {
     				line: selection.start.line,
     				ch: selectedLineText.length
     			});
     		} else {
-    			editor.replaceRange('1. ', { line: selection.start.line, ch: 0 });
-    		}
+    			editor.replaceRange(lineStartText + selectedLineText + lineEndText, { line: selection.start.line, ch: 0 }, {
+    				line: selection.start.line,
+    				ch: selectedLineText.length
+    			});
+
+    			// if (selectedLineText === '') {
+    			// don't place the cursor at the end of the line when changing a single line
+    			editor.setSelection({
+    				line: selection.start.line,
+    				ch: selectedLineText.length + lengthStartText + (selectedLineText === '' ? 0 : lengthEndText)
+    			});
+    		} // }
 
     		editor.focus();
     	}
 
     	function h1() {
     		updateSingleLineStyleFormat('> __**', '**__');
+    	}
+
+    	function h2() {
+    		updateSingleLineStyleFormat('__**', '**__');
     	}
 
     	function inlineCode() {
@@ -92520,25 +92526,29 @@ ${fields.join(',\n')}
     	}
 
     	function orderedList() {
-    		const selection = selectionRangeFixedStartEnd();
-    		const selectedLineText = editor.getLine(selection.start.line);
-
-    		if (selectedLineText.startsWith("1. ")) {
-    			editor.replaceRange(selectedLineText.substring(("1. ").length), { line: selection.start.line, ch: 0 }, {
-    				line: selection.start.line,
-    				ch: selectedLineText.length
-    			});
-    		} else {
-    			editor.replaceRange('1. ', { line: selection.start.line, ch: 0 });
-    		}
-
-    		editor.focus();
+    		// const selection = selectionRangeFixedStartEnd();
+    		// const selectedLineText = editor.getLine(selection.start.line);
+    		// if (selectedLineText.startsWith("1. ")) {
+    		// 	editor.replaceRange(selectedLineText.substring("1. ".length), {line: selection.start.line, ch: 0}, {line: selection.start.line, ch: selectedLineText.length});
+    		// }
+    		// else {
+    		// 	editor.replaceRange('1. ', {line: selection.start.line, ch: 0});
+    		// }
+    		// editor.focus();
+    		updateSingleLineStyleFormat('1. ');
     	}
 
     	function setCursor(e) {
     		cursor = e.target.selectionStart;
     	}
 
+    	// function scrollPosition(e) {
+    	// 	const scrollView = document.getElementById('scrollView1');		
+    	// }
+    	// function cursorMoved(cm) {
+    	// 	// console.log(cm);
+    	// 	// cursor = cm.getCursor();
+    	// }
     	function getVisibleText(text) {
     		// console.log(editor.getViewport());
     		const rect = editor.getWrapperElement().getBoundingClientRect();
@@ -92602,24 +92612,25 @@ ${fields.join(',\n')}
     	}
 
     	function updater(cm, change) {
+    		// autoformatText(cm);
     		// console.log(change);
-    		const originalText = cm.getValue();
-
+    		// const originalText = cm.getValue();
     		// console.log(getVisibleText(originalText));
     		// const visibleText = getVisibleText(cm.getValue());
-    		const { formattedText, newCursorPosition } = autoformatText(originalText, cm.getCursor());
-
+    		// const { formattedText, newCursorPosition } = autoformatText(originalText, cm.getCursor());
     		// const { formattedText, newCursorPosition } = autoformatText(visibleText, cm.getCursor());
-    		if (originalText != formattedText) {
-    			// if (visibleText != formattedText) {
-    			cm.setValue(formattedText);
+    		// editor.off('change');
+    		// editor.on('change', updater);
+    		// const cmClone = structuredClone(cm);
+    		// autoformatText(cmClone);
+    		set_store_value(text, $text = cm.getValue(), $text);
+    	} // if (originalText != formattedText) {
+    	// // if (visibleText != formattedText) {
 
-    			cm.setCursor(newCursorPosition);
-    		}
-
-    		set_store_value(text, $text = formattedText, $text);
-    	}
-
+    	// 	cm.setValue(formattedText);
+    	// 	cm.setCursor(newCursorPosition);
+    	// }
+    	// $text = formattedText;
     	function viewportChanger(cm) {
     		visibleText = getVisibleText(validText);
     	} // $text = visibleText;
@@ -92634,39 +92645,6 @@ ${fields.join(',\n')}
     		// editor.focus();
     		// const selection = selectionRangeFixedStartEnd();
     		// editor.replaceRange('⬥ ', {line: selection.start.line, ch: 0}, {line: selection.start.line, ch: 0});
-    		editor.focus();
-    	}
-
-    	function generateToC() {
-    		// .tag:introduction
-    		const regexp = /\n.tag:([^\n]+)/g;
-
-    		const results = [...text.matchAll(regexp)];
-    		let fields = [];
-
-    		for (const result of results) {
-    			fields.push(`      {
-        "name": "__${result[1]}__",
-        "value": "[Link]($linkmsg_${result[1]}$)",
-        "inline": true
-      }`);
-    		}
-
-    		let tocEmbed = `
-{
-  "embed": {
-    "title": "Table of Contents",
-    "color": 39423,
-    "fields": [
-${fields.join(',\n')}
-    ]
-  }
-}
-.embed:json`;
-
-    		editor.setCursor({ line: editor.lastLine() });
-    		editor.setValue(text + tocEmbed);
-    		editor.setCursor({ line: editor.lastLine() });
     		editor.focus();
     	}
 
@@ -92692,6 +92670,7 @@ ${fields.join(',\n')}
     		validText,
     		cursor,
     		visibleText,
+    		newInput,
     		validateText,
     		selectionRangeFixedStartEnd,
     		includeBeforeAfterText,
@@ -92711,13 +92690,10 @@ ${fields.join(',\n')}
     		unorderedList,
     		orderedList,
     		setCursor,
-    		scrollPosition,
-    		cursorMoved,
     		getVisibleText,
     		updater,
     		viewportChanger,
     		debug,
-    		generateToC,
     		$text
     	});
 
@@ -92732,7 +92708,21 @@ ${fields.join(',\n')}
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [$text, validateText, h1, unorderedList, orderedList, debug];
+    	return [
+    		$text,
+    		validateText,
+    		bold,
+    		italic,
+    		underline,
+    		strikethrough,
+    		h1,
+    		h2,
+    		inlineCode,
+    		codeBlock,
+    		unorderedList,
+    		orderedList,
+    		debug
+    	];
     }
 
     class App extends SvelteComponentDev {
