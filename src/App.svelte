@@ -23,7 +23,8 @@
 	import ScrollSync from 'scroll-sync'
 	
 
-	import autoformatText from './autoformat'; 
+	// import autoformatText from './autoformat';
+	import autoformatText from './autoformat2';  
 
 	// import { persist, localStorage } from '@macfja/svelte-persistent-store';
 	// import { writable } from 'svelte/store';
@@ -69,12 +70,15 @@
 		editor.setSize('100%', '100%');
 		editor.on('change', updater);
 		editor.on('scroll', viewportChanger);
+		editor.on('inputRead', newInput);
 
 		editor.setOption("extraKeys", {
 			'Ctrl-B': bold,
 			'Ctrl-I': italic,
 			'Ctrl-U': underline,
 			'Ctrl-Alt-S': strikethrough,
+			'Ctrl-Alt-1': h1,
+			'Ctrl-Alt-2': h2,
 			'Enter': 'newlineAndIndentContinueMarkdownList',
 			'Tab': 'autoIndentMarkdownList',
 			'Shift-Tab': 'autoUnindentMarkdownList'
@@ -84,6 +88,10 @@
 		validateText();
 	});
 	
+	function newInput(cm, change) {
+		autoformatText(cm);
+	}
+
 	function validateText(){
 		validText = $text;
 		visibleText = getVisibleText(validText);
@@ -366,22 +374,31 @@
 		return visLines.join('\n');
 	}
 
+
 	function updater(cm, change) {
+		// autoformatText(cm);
 		// console.log(change);
-		const originalText = cm.getValue();
+		// const originalText = cm.getValue();
 		// console.log(getVisibleText(originalText));
 		// const visibleText = getVisibleText(cm.getValue());
 
 
-		const { formattedText, newCursorPosition } = autoformatText(originalText, cm.getCursor());
+		// const { formattedText, newCursorPosition } = autoformatText(originalText, cm.getCursor());
+		
 		// const { formattedText, newCursorPosition } = autoformatText(visibleText, cm.getCursor());
 		
-		if (originalText != formattedText) {
-		// if (visibleText != formattedText) {
-			cm.setValue(formattedText);
-			cm.setCursor(newCursorPosition);
-		}
-		$text = formattedText;
+		// editor.off('change');
+		// editor.on('change', updater);
+		// const cmClone = structuredClone(cm);
+		// autoformatText(cmClone);
+
+		$text = cm.getValue();
+		// if (originalText != formattedText) {
+		// // if (visibleText != formattedText) {
+		// 	cm.setValue(formattedText);
+		// 	cm.setCursor(newCursorPosition);
+		// }
+		// $text = formattedText;
 	}
 
 	function viewportChanger(cm) {
@@ -408,17 +425,21 @@
 	<div class='flex flex-col h-screen bg-indigo-400'>
 		<!-- <div class='flex flex-col h-screen bg-cyan-800'> -->
 		
-			<!-- <Toolbar 
-			on:bold={bold} 
-			on:italic={italic} 
-			on:underline={underline} 
-			on:strikethrough={strikethrough} 
-			on:inlineCode={inlineCode} 
-			on:codeBlock={codeBlock} 
-			on:unorderedList={unorderedList} 
-			on:orderedList={orderedList} 
-			on:generateToC={generateToC}/> -->
-			<Toolbar on:h1={h1} on:h2={h2} on:unorderedList={unorderedList} on:orderedList={orderedList} on:debug={debug}></Toolbar>
+			<Toolbar
+				on:bold={bold} 
+				on:italic={italic} 
+				on:underline={underline} 
+				on:strikethrough={strikethrough}
+				on:h1={h1} 
+				on:h2={h2}
+				on:unorderedList={unorderedList} 
+				on:orderedList={orderedList} 
+				on:inlineCode={inlineCode} 
+				on:codeBlock={codeBlock} 
+				on:debug={debug}
+			/>
+
+			<!-- <Toolbar on:h1={h1} on:h2={h2} on:unorderedList={unorderedList} on:orderedList={orderedList} on:debug={debug}></Toolbar> -->
 
 			<div class='flex-grow flex flex-row overflow-auto'>
 				<div class='w-1/2 ml-4 mr-2 mb-4 flex flex-col'>

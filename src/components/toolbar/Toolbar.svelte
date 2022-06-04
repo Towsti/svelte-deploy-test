@@ -33,8 +33,8 @@
         <Button on:click={() => dispatch('strikethrough')} title='Strikethrough - Ctrl+Alt+S' corner={'rounded-r'}><TypeStrikethrough/></Button>
     </ButtonGroup>
     <ButtonGroup>
-        <Button on:click={() => dispatch('h1')} title='Header 1' corner={'rounded-l'}><TypeH1/></Button>
-		<Button on:click={() => dispatch('h2')} title='Header 2' corner={'rounded-r'}><TypeH2/></Button>
+        <Button on:click={() => dispatch('h1')} title='Header 1 - Ctrl+Alt+1' corner={'rounded-l'}><TypeH1/></Button>
+		<Button on:click={() => dispatch('h2')} title='Header 2  - Ctrl+Alt+2' corner={'rounded-r'}><TypeH2/></Button>
     </ButtonGroup>
 
     <ButtonGroup>
