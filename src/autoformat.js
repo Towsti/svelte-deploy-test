@@ -1,85 +1,80 @@
-// todo: duplicate code and shared code with markdown.js
 import { channelsFormat, rolesFormat, emojisFormat } from './constants/discord';
 
 
-String.prototype.replaceAt = function(startIndex, replacement, endIndex) {
-    return this.substring(0, startIndex) + replacement + this.substring(endIndex);
-}
-
-function formatEmojis(text) {
+function formatEmojis(cm) {
     /* Format named emojis (or aliases) to emoji ID's. 
     INPUT: "text ;gbarge; more text ;greaterbarge;" 
     OUTPUT: "text <:gbarge:1234> more text <:gbarge:1234>" */
-    let formattedText = text;
+    const formattedText = cm.getValue();
     const regexp = /;([^;]+);/g;
     const results = [...formattedText.matchAll(regexp)];
     for (const result of results.reverse()) {
         const [match, name] = result;
-        const startIndex = result.index;
-        const endIndex = startIndex + match.length;
         const emoji = emojisFormat[name.toLowerCase()];
-        if (emoji)
-            formattedText = formattedText.replaceAt(startIndex, emoji, endIndex);
+        if (emoji) {
+            const cursor = getCursorFromIndex(formattedText, result.index);
+            cm.replaceRange(emoji, cursor, {line: cursor.line, ch: cursor.ch + match.length});
+        }
     }
-    return formattedText;
 }
 
-function formatChannels(text) {
+function formatChannels(cm) {
     /* Format named channels to channel ID's. 
     INPUT: "text ;#eD2-hydrix-drAgOns; more text" 
     OUTPUT: "text <#1234> more text" */
-    let formattedText = text;
+    const formattedText = cm.getValue();
     const regexp = /;#([^;]+);/g;
     const results = [...formattedText.matchAll(regexp)];
     for (const result of results.reverse()) {
         const [match, name] = result;
-        const startIndex = result.index;
-        const endIndex = startIndex + match.length;
         const channelID = channelsFormat[name.toLowerCase()];
-        if (channelID)
-            formattedText = formattedText.replaceAt(startIndex, `<#${channelID}>`, endIndex);
+        if (channelID) {
+            const cursor = getCursorFromIndex(formattedText, result.index);
+            cm.replaceRange(`<#${channelID}>`, cursor, {line: cursor.line, ch: cursor.ch + match.length});
+        }
     }
-    return formattedText;
 }
 
-function formatRoles(text) {
+function formatRoles(cm) {
     /* Format named roles to role ID's. 
     INPUT: "text ;@&helPer; more text" 
     OUTPUT: "text <@&1234> more text" */
-    let formattedText = text;
+    const formattedText = cm.getValue();
     const regexp = /;@&([^;]+);/g;
     const results = [...formattedText.matchAll(regexp)];
     for (const result of results.reverse()) {
         const [match, name] = result;
-        const startIndex = result.index;
-        const endIndex = startIndex + match.length;
         const roleID = rolesFormat[name.toLowerCase()];
-        if (roleID)
-            formattedText = formattedText.replaceAt(startIndex, `<@&${roleID}>`, endIndex);
+        if (roleID) {
+            const cursor = getCursorFromIndex(formattedText, result.index);
+            cm.replaceRange(`<@&${roleID}>`, cursor, {line: cursor.line, ch: cursor.ch + match.length});
+        }
     }
     return formattedText;
 }
 
-function formatArrows(text) {
-    return text.replace(/->/g, '→');
+function formatArrows(cm) {
+    let formattedText = cm.getValue();
+    const regexp = /->/g;
+    const results = [...formattedText.matchAll(regexp)];
+    for (const result of results.reverse()) {
+        const cursor = getCursorFromIndex(formattedText, result.index);
+        cm.replaceRange('→', cursor, {line: cursor.line, ch: cursor.ch + result.length + 1});
+    }
 }
 
 function getCursorFromIndex(text, index) {
     /* Get codemirror cursor object { line, ch } from a string index.
     INPUT: text = "hello\nworld", index = 7
     OUTPUT: {line: 1, ch: 1} */
-    const lines = text.split('\n');
-    let cursorChar = index;
-    let cursorLine;
-    for (let [i, line] of lines.entries()) {
-        cursorLine = i;
-        if (i < lines.length - 1)
-            line += '\n';
-        if (cursorChar <= line.length)
-            break;
-        cursorChar -= line.length; 
+    var perLine = text.split('\n');
+    var totalLength = 0;
+    for (let i = 0; i < perLine.length; i++) {
+        totalLength += perLine[i].length;
+        if (totalLength >= index)
+            return {line: i, ch: index - (totalLength - perLine[i].length)};
+        totalLength += 1;  // include '\n' 
     }
-    return {line: cursorLine, ch: cursorChar};
 }
 
 function reverse(str) {
@@ -93,31 +88,10 @@ function reverse(str) {
     return reversed;
 }
 
-function getNewCursorPosition(originalText, formattedText, originalCursor) {
-    if (originalText == formattedText)
-        return originalCursor;
-    
-    const originalTextReversed = reverse(originalText);
-    const formattedTextReversed = reverse(formattedText);
-    let changeIndex;
-    for (let i=0; i < formattedTextReversed.length; i++) {
-        if (formattedTextReversed[i] != originalTextReversed[i]) {
-            changeIndex = formattedText.length - i;
-            break;
-        }
-    }
-    return getCursorFromIndex(formattedText, changeIndex);
-}
-
-export default function autoformatText(text, cursor) {
-    let formattedText = text;
-    
+export default function autoformatText(cm) {
     // ordered so that there are no false results (not mandatory but faster)
-    formattedText = formatArrows(formattedText);
-    formattedText = formatRoles(formattedText);
-    formattedText = formatChannels(formattedText);
-    formattedText = formatEmojis(formattedText);
-    
-    const newCursorPosition = getNewCursorPosition(text, formattedText, cursor);
-    return { formattedText, newCursorPosition}
+    formatArrows(cm);
+    formatRoles(cm);
+    formatChannels(cm);
+    formatEmojis(cm);
 }

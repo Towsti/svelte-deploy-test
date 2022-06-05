@@ -72695,8 +72695,7 @@ __**Changes to Style Guide**__
       var ie_version = ie && (ie_upto10 ? document.documentMode || 6 : +(edge || ie_11up)[1]);
       var webkit = !edge && /WebKit\//.test(userAgent);
       var qtwebkit = webkit && /Qt\/\d+\.\d+/.test(userAgent);
-      var chrome = !edge && /Chrome\/(\d+)/.exec(userAgent);
-      var chrome_version = chrome && +chrome[1];
+      var chrome = !edge && /Chrome\//.test(userAgent);
       var presto = /Opera\//.test(userAgent);
       var safari = /Apple Computer/.test(navigator.vendor);
       var mac_geMountainLion = /Mac OS X 1\d\D([8-9]|\d\d)\D/.test(userAgent);
@@ -77179,17 +77178,6 @@ __**Changes to Style Guide**__
       }
 
       function onScrollWheel(cm, e) {
-        // On Chrome 102, viewport updates somehow stop wheel-based
-        // scrolling. Turning off pointer events during the scroll seems
-        // to avoid the issue.
-        if (chrome && chrome_version >= 102) {
-          if (cm.display.chromeScrollHack == null) { cm.display.sizer.style.pointerEvents = "none"; }
-          else { clearTimeout(cm.display.chromeScrollHack); }
-          cm.display.chromeScrollHack = setTimeout(function () {
-            cm.display.chromeScrollHack = null;
-            cm.display.sizer.style.pointerEvents = "";
-          }, 100);
-        }
         var delta = wheelEventDelta(e), dx = delta.x, dy = delta.y;
         var pixelsPerUnit = wheelPixelsPerUnit;
         if (e.deltaMode === 0) {
@@ -80878,7 +80866,7 @@ __**Changes to Style Guide**__
         var pasted = e.clipboardData && e.clipboardData.getData("Text");
         if (pasted) {
           e.preventDefault();
-          if (!cm.isReadOnly() && !cm.options.disableInput && cm.hasFocus())
+          if (!cm.isReadOnly() && !cm.options.disableInput)
             { runInOp(cm, function () { return applyTextInput(cm, pasted, 0, null, "paste"); }); }
           return true
         }
@@ -82523,7 +82511,7 @@ __**Changes to Style Guide**__
 
       addLegacyProps(CodeMirror);
 
-      CodeMirror.version = "5.65.5";
+      CodeMirror.version = "5.65.3";
 
       return CodeMirror;
 
@@ -91668,35 +91656,15 @@ ${fields.join(',\n')}
         /* Get codemirror cursor object { line, ch } from a string index.
         INPUT: text = "hello\nworld", index = 7
         OUTPUT: {line: 1, ch: 1} */
-        const lines = text.split('\n');
-        let cursorChar = index;
-        let cursorLine;
-        for (let [i, line] of lines.entries()) {
-            cursorLine = i;
-            if (i < lines.length - 1)
-                line += '\n';
-            if (cursorChar <= line.length)
-                break;
-            cursorChar -= line.length; 
+        var perLine = text.split('\n');
+        var totalLength = 0;
+        for (let i = 0; i < perLine.length; i++) {
+            totalLength += perLine[i].length;
+            if (totalLength >= index)
+                return {line: i, ch: index - (totalLength - perLine[i].length)};
+            totalLength += 1;  // include '\n' 
         }
-        return {line: cursorLine, ch: cursorChar};
     }
-
-    // function getNewCursorPosition(originalText, formattedText, originalCursor) {
-    //     if (originalText == formattedText)
-    //         return originalCursor;
-        
-    //     const originalTextReversed = reverse(originalText);
-    //     const formattedTextReversed = reverse(formattedText);
-    //     let changeIndex;
-    //     for (let i=0; i < formattedTextReversed.length; i++) {
-    //         if (formattedTextReversed[i] != originalTextReversed[i]) {
-    //             changeIndex = formattedText.length - i;
-    //             break;
-    //         }
-    //     }
-    //     return getCursorFromIndex(formattedText, changeIndex);
-    // }
 
     function autoformatText(cm) {
         // ordered so that there are no false results (not mandatory but faster)
@@ -92064,7 +92032,7 @@ ${fields.join(',\n')}
     const { Object: Object_1, console: console_1 } = globals;
     const file = "src\\App.svelte";
 
-    // (458:5) {:catch error}
+    // (434:5) {:catch error}
     function create_catch_block(ctx) {
     	let p;
     	let t_value = /*error*/ ctx[28].message + "";
@@ -92075,7 +92043,7 @@ ${fields.join(',\n')}
     			p = element("p");
     			t = text$1(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file, 458, 6, 13694);
+    			add_location(p, file, 434, 6, 12897);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -92091,14 +92059,14 @@ ${fields.join(',\n')}
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(458:5) {:catch error}",
+    		source: "(434:5) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (455:5) {:then}
+    // (431:5) {:then}
     function create_then_block(ctx) {
     	const block = { c: noop, m: noop, p: noop, d: noop };
 
@@ -92106,14 +92074,14 @@ ${fields.join(',\n')}
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(455:5) {:then}",
+    		source: "(431:5) {:then}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (451:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}
+    // (427:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}
     function create_pending_block(ctx) {
     	let div;
     	let p;
@@ -92123,9 +92091,9 @@ ${fields.join(',\n')}
     			div = element("div");
     			p = element("p");
     			p.textContent = "Waiting for channels, users, and prices to load...";
-    			add_location(p, file, 452, 7, 13465);
+    			add_location(p, file, 428, 7, 12668);
     			attr_dev(div, "class", "w-1/2 bg-slate-50 flex-grow");
-    			add_location(div, file, 451, 6, 13415);
+    			add_location(div, file, 427, 6, 12618);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -92141,7 +92109,7 @@ ${fields.join(',\n')}
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(451:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}",
+    		source: "(427:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}",
     		ctx
     	});
 
@@ -92209,16 +92177,16 @@ ${fields.join(',\n')}
     			div1 = element("div");
     			info.block.c();
     			attr_dev(textarea, "id", "input");
-    			add_location(textarea, file, 446, 5, 13207);
+    			add_location(textarea, file, 422, 5, 12410);
     			attr_dev(div0, "class", "w-1/2 ml-4 mr-2 mb-4 flex flex-col");
-    			add_location(div0, file, 444, 4, 13006);
+    			add_location(div0, file, 420, 4, 12209);
     			attr_dev(div1, "class", "w-1/2 mr-4 ml-2 mb-4 overflow-auto");
-    			add_location(div1, file, 449, 4, 13324);
+    			add_location(div1, file, 425, 4, 12527);
     			attr_dev(div2, "class", "flex-grow flex flex-row overflow-auto");
-    			add_location(div2, file, 443, 3, 12949);
+    			add_location(div2, file, 419, 3, 12152);
     			attr_dev(div3, "class", "flex flex-col h-screen bg-indigo-400");
-    			add_location(div3, file, 424, 1, 12363);
-    			add_location(main, file, 423, 0, 12354);
+    			add_location(div3, file, 400, 1, 11566);
+    			add_location(main, file, 399, 0, 11557);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -92612,25 +92580,9 @@ ${fields.join(',\n')}
     	}
 
     	function updater(cm, change) {
-    		// autoformatText(cm);
-    		// console.log(change);
-    		// const originalText = cm.getValue();
-    		// console.log(getVisibleText(originalText));
-    		// const visibleText = getVisibleText(cm.getValue());
-    		// const { formattedText, newCursorPosition } = autoformatText(originalText, cm.getCursor());
-    		// const { formattedText, newCursorPosition } = autoformatText(visibleText, cm.getCursor());
-    		// editor.off('change');
-    		// editor.on('change', updater);
-    		// const cmClone = structuredClone(cm);
-    		// autoformatText(cmClone);
     		set_store_value(text, $text = cm.getValue(), $text);
-    	} // if (originalText != formattedText) {
-    	// // if (visibleText != formattedText) {
+    	}
 
-    	// 	cm.setValue(formattedText);
-    	// 	cm.setCursor(newCursorPosition);
-    	// }
-    	// $text = formattedText;
     	function viewportChanger(cm) {
     		visibleText = getVisibleText(validText);
     	} // $text = visibleText;

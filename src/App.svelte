@@ -22,9 +22,7 @@
 	import Toolbar from './components/toolbar/Toolbar.svelte';
 	import ScrollSync from 'scroll-sync'
 	
-
-	// import autoformatText from './autoformat';
-	import autoformatText from './autoformat2';  
+	import autoformatText from './autoformat';  
 
 	// import { persist, localStorage } from '@macfja/svelte-persistent-store';
 	// import { writable } from 'svelte/store';
@@ -376,29 +374,7 @@
 
 
 	function updater(cm, change) {
-		// autoformatText(cm);
-		// console.log(change);
-		// const originalText = cm.getValue();
-		// console.log(getVisibleText(originalText));
-		// const visibleText = getVisibleText(cm.getValue());
-
-
-		// const { formattedText, newCursorPosition } = autoformatText(originalText, cm.getCursor());
-		
-		// const { formattedText, newCursorPosition } = autoformatText(visibleText, cm.getCursor());
-		
-		// editor.off('change');
-		// editor.on('change', updater);
-		// const cmClone = structuredClone(cm);
-		// autoformatText(cmClone);
-
 		$text = cm.getValue();
-		// if (originalText != formattedText) {
-		// // if (visibleText != formattedText) {
-		// 	cm.setValue(formattedText);
-		// 	cm.setCursor(newCursorPosition);
-		// }
-		// $text = formattedText;
 	}
 
 	function viewportChanger(cm) {
