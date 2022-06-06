@@ -18,8 +18,9 @@
     import Button from './Button.svelte';
     import ButtonGroup from './ButtonGroup.svelte';
     import ToCDropdown from './ToCDropdown.svelte';
-    import Dropdown from './Dropdown.svelte';
+    import TemplateMenu from './TemplateMenu.svelte';
     import CommandMenu from './CommandMenu.svelte';
+    import Help from './Help.svelte';
 
     const dispatch = createEventDispatcher();
 </script>
@@ -47,29 +48,22 @@
 		<Button on:click={() => dispatch('codeBlock')} title='Code block' corner={'rounded-r'}><CodeSquare/></Button>
     </ButtonGroup>
 
-    <!-- <ButtonGroup>
-        <Button on:click={() => dispatch('pvmeSpreadsheet')} title='PVME Spreadsheet' corner={'rounded'}><Table/></Button>
-    </ButtonGroup> -->
-
     <ButtonGroup>
-        <ToCDropdown></ToCDropdown>
-    </ButtonGroup>
-
-    <ButtonGroup>
-        <!-- <Button on:click={() => dispatch('debug')} title='PVME Spreadsheet' corner={'rounded'}>Command ▼</Button> -->
-        <!-- <Dropdown></Dropdown> -->
         <CommandMenu {dispatch}></CommandMenu>
     </ButtonGroup>
 
     <ButtonGroup>
-        <!-- <Button on:click={() => dispatch('debug')} title='PVME Spreadsheet' corner={'rounded'}>Template ▼</Button> -->
-        <Dropdown></Dropdown>
+        <TemplateMenu></TemplateMenu>
     </ButtonGroup>
 
+    <ButtonGroup>
+        <ToCDropdown></ToCDropdown>
+    </ButtonGroup>
     
 
     <div class="inline-flex rounded-md shadow-sm mb-2 mx-2 ml-auto" role="group">
-        <Button on:click={() => dispatch('debug')} corner={'rounded-l'}><QuestionCircle/></Button>
+        <!-- <Button on:click={() => dispatch('debug')} corner={'rounded-l'}><QuestionCircle/></Button> -->
+        <Help></Help>
         <Button on:click={() => dispatch('debug')} corner={'rounded-r'}><InfoCircle/></Button>
     </div>
 </div>

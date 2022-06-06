@@ -13,7 +13,6 @@
         const dropdown = new Dropdown(document.getElementById('ToCInformation'), document.getElementById('ToCButton'));
         dropdown.hide();
         navigator.clipboard.writeText(toc);
-        console.log("hi");
     }
 
 	function generateToC() {
@@ -45,13 +44,13 @@ ${fields.join(',\n')}
 </script>
 
 
-<button id="ToCButton" data-dropdown-toggle="ToCInformation" on:click={generateToC} type="button" class='rounded bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-2 active:bg-indigo-800 text-sm border border-indigo-700' title="Generate table of contents">
+<button id="ToCButton" data-dropdown-toggle="ToCInformation" on:click={generateToC} type="button" class='rounded bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-2 active:bg-indigo-800 text-sm border border-indigo-700' title="Create table of contents">
   Table of contents
 </button>
 
 <div id="ToCInformation" class="z-10 hidden rounded shadow bg-slate-700 border border-slate-800">
   <div class="px-4 py-4 text-sm text-white">
-    <pre class="overflow-auto bg-slate-800 px-2" style="max-height: 50vh;">
+    <pre class="overflow-auto bg-slate-800 px-2" style="height: 40vh; width: 30vw">
       {toc}
     </pre>
   </div>
