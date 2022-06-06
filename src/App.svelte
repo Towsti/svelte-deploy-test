@@ -438,7 +438,7 @@
 						</div>
 					{:then}
 						<!-- <TempComponent text={validText}></TempComponent> -->
-						<DiscordView text={visibleText}/>
+						<DiscordView text={text}/>
 					{:catch error}
 						<p style="color: red">{error.message}</p>
 					{/await}
