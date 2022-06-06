@@ -11,7 +11,6 @@
 	import TypeH2 from 'svelte-bootstrap-icons/lib/TypeH2';
 	import ListUl from 'svelte-bootstrap-icons/lib/ListUl';
 	import ListOl from 'svelte-bootstrap-icons/lib/ListOl';
-    import Table from 'svelte-bootstrap-icons/lib/Table';
 
     import InfoCircle from 'svelte-bootstrap-icons/lib/InfoCircle';
     import QuestionCircle from 'svelte-bootstrap-icons/lib/QuestionCircle';
@@ -20,6 +19,7 @@
     import ButtonGroup from './ButtonGroup.svelte';
     import ToCDropdown from './ToCDropdown.svelte';
     import Dropdown from './Dropdown.svelte';
+    import CommandMenu from './CommandMenu.svelte';
 
     const dispatch = createEventDispatcher();
 </script>
@@ -52,15 +52,18 @@
     </ButtonGroup> -->
 
     <ButtonGroup>
-        <ToCDropdown {dispatch}></ToCDropdown>
+        <ToCDropdown></ToCDropdown>
     </ButtonGroup>
 
     <ButtonGroup>
-        <Button on:click={() => dispatch('debug')} title='PVME Spreadsheet' corner={'rounded'}>Command ▼</Button>
+        <!-- <Button on:click={() => dispatch('debug')} title='PVME Spreadsheet' corner={'rounded'}>Command ▼</Button> -->
+        <!-- <Dropdown></Dropdown> -->
+        <CommandMenu {dispatch}></CommandMenu>
     </ButtonGroup>
 
     <ButtonGroup>
-        <Button on:click={() => dispatch('debug')} title='PVME Spreadsheet' corner={'rounded'}>Template ▼</Button>
+        <!-- <Button on:click={() => dispatch('debug')} title='PVME Spreadsheet' corner={'rounded'}>Template ▼</Button> -->
+        <Dropdown></Dropdown>
     </ButtonGroup>
 
     

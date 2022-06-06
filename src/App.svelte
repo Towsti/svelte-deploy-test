@@ -395,6 +395,13 @@
 
 		editor.focus();
 	}
+
+	function command(event) {
+		// console.log();
+		console.log(`selected: ${event.detail.command}`);
+		editor.replaceSelection(event.detail.command);
+		editor.focus();
+	}
 </script>
 
 <main>
@@ -413,6 +420,7 @@
 				on:inlineCode={inlineCode} 
 				on:codeBlock={codeBlock} 
 				on:debug={debug}
+				on:command={command}
 			/>
 
 			<!-- <Toolbar on:h1={h1} on:h2={h2} on:unorderedList={unorderedList} on:orderedList={orderedList} on:debug={debug}></Toolbar> -->
