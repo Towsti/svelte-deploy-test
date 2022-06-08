@@ -4,6 +4,7 @@
 	import { defaultText } from './constants/defaultText';
 
 	import 'codemirror/lib/codemirror.css';
+	import 'codemirror/addon/display/placeholder.js';
 	import 'codemirror/theme/dracula.css';
 
 	// import 'codemirror/mode/markdown/markdown';
@@ -428,7 +429,7 @@
 			<div class='flex-grow flex flex-row overflow-auto'>
 				<div class='w-1/2 ml-4 mr-2 mb-4 flex flex-col'>
 					<!-- <textarea id="input" class=" scroll-container resize-none outline-none p-3 bg-slate-700 text-slate-50 text-clip">{text}</textarea> -->
-					<textarea id="input"></textarea>
+					<textarea id="input" placeholder="Click ❔ for tips on autoformatting..."></textarea>
 					<ErrorView text={$text} on:noCriticalErrors={validateText}/>
 				</div>
 				<div class='w-1/2 mr-4 ml-2 mb-4 overflow-auto'>
@@ -468,6 +469,9 @@
   background: #555; 
 } */
 
+	.cm-s-dracula.CodeMirror.CodeMirror-empty {color: rgb(182, 182, 182) !important;}
+	/* .cm-s-dracula.CodeMirror-empty {background-color: antiquewhite !important; background: black !important;} */
+
 	.CodeMirror {
 		/* font-family: Arial, monospace; */
 		/* font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
@@ -499,4 +503,5 @@
 	/* .cm-s-dracula .CodeMirror-selected { background: rgba(255, 255, 255, 0.25) !important; } */
 	.cm-s-dracula div.CodeMirror-selected { background: #214283 !important; }
 
+	
 </style>

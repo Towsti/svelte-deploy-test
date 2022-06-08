@@ -1,3 +1,18 @@
+export const styleGuide = "";
+
+
+// async function getStyleGuide(url) {
+//   const res = await fetch(url, {
+//       method: 'GET'
+//   });
+  
+//   if (res.ok) {
+//       return await res.text();
+//   } else {
+//       throw new Error(await res.text());
+//   }
+// }
+
 export const defaultText = 
 `Prices:
 1/3 green blubber jellyfish 325 => $data_pvme:Prices!B8$

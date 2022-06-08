@@ -37,8 +37,8 @@
     <button title="$linkmsg_tagword$" on:click={() => selectCommand('$linkmsg_tagword$')} class='rounded-t flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700' type="button">
       $linkmsg_tagword$
     </button>
-    <button title="$data_pvme:Worksheet!A1$" on:click={() => selectCommand('$data_pvme:sheet!A1$')} class='rounded-b flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700' type="button">
-      $data_pvme:Worksheet!A1$
+    <button title="$data_pvme:sheet!A1$" on:click={() => selectCommand('$data_pvme:sheet!A1$')} class='rounded-b flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700' type="button">
+      $data_pvme:sheet!A1$
     </button>
   </div>
 </div>

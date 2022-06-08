@@ -12,6 +12,9 @@ export let usersFormat = {};
 export let rolesFormat = {};
 export let emojisFormat = {};
 
+export let styleGuide = '';
+
+
 export async function populateConstants() {
     // await new Promise(r => setTimeout(r, 2000));
     await setChannels();
@@ -19,10 +22,7 @@ export async function populateConstants() {
     await setUsers();
     await setPvmeSpreadsheet();
     await setEmojis();
-}
-
-async function setPvmeSpreadsheet() {
-    pvmeSpreadsheet = await rawGithubGetRequest('https://raw.githubusercontent.com/Towsti/pvme-settings/master/pvme_spreadsheet.json');
+    await setStyleGuide();
 }
 
 async function rawGithubGetRequest(url) {
@@ -30,15 +30,32 @@ async function rawGithubGetRequest(url) {
         method: 'GET'
     });
     
-    if (res.ok) {
-        return await res.json();
-    } else {
+    if (!res.ok)
         throw new Error(await res.text());
-    }
+
+    return res;
+}
+
+async function rawGithubTextRequest(url) {
+    const res = await rawGithubGetRequest(url);
+    return await res.text();
+}
+
+async function rawGithubJSONRequest(url) {
+    const res = await rawGithubGetRequest(url);
+    return await res.json();
+}
+
+async function setStyleGuide() {
+    styleGuide = await rawGithubTextRequest('https://raw.githubusercontent.com/pvme/pvme-guides/master/guide-writing/style-guide.txt');
+}
+
+async function setPvmeSpreadsheet() {
+    pvmeSpreadsheet = await rawGithubJSONRequest('https://raw.githubusercontent.com/Towsti/pvme-settings/master/pvme_spreadsheet.json');
 }
 
 async function setChannels() {
-    const channelsJSON = await rawGithubGetRequest('https://raw.githubusercontent.com/pvme/pvme-settings/master/channels.json');
+    const channelsJSON = await rawGithubJSONRequest('https://raw.githubusercontent.com/pvme/pvme-settings/master/channels.json');
     channels = channelsFormat = {};
     for (const channel of channelsJSON) {
         channels[channel.id] = channel.name;
@@ -47,7 +64,7 @@ async function setChannels() {
 }
 
 async function setRoles() {
-    const rolesJSON = await rawGithubGetRequest('https://raw.githubusercontent.com/pvme/pvme-settings/master/roles.json');
+    const rolesJSON = await rawGithubJSONRequest('https://raw.githubusercontent.com/pvme/pvme-settings/master/roles.json');
     roles = rolesFormat = {};
     for (const role of rolesJSON) {
         roles[role.id] = role.name;
@@ -56,7 +73,7 @@ async function setRoles() {
 }
 
 async function setUsers() {
-    const usersJSON = await rawGithubGetRequest('https://raw.githubusercontent.com/Towsti/pvme-settings/master/users.json');
+    const usersJSON = await rawGithubJSONRequest('https://raw.githubusercontent.com/Towsti/pvme-settings/master/users.json');
     users = usersFormat = {};
     for (const user of usersJSON) {
         users[user.id] = user.name;
@@ -65,7 +82,7 @@ async function setUsers() {
 }
 
 async function setEmojis() {
-    const emojisJSON = await rawGithubGetRequest('https://raw.githubusercontent.com/pvme/rotation-builder/main/settings.json');
+    const emojisJSON = await rawGithubJSONRequest('https://raw.githubusercontent.com/pvme/rotation-builder/main/settings.json');
     emojisFormat = {};
     for (const [emoji, aliases] of Object.entries(emojisJSON)) {
         for (const alias of aliases) {
