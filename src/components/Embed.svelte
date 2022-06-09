@@ -16,7 +16,6 @@
     export let fields = null;
     export let thumbnail = null;
     export let image = null;
-    // export let timestamp = null;    // unused
     export let footer = null;
 </script>
 

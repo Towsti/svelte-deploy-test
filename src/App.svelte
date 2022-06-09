@@ -1,40 +1,31 @@
 <script>
 	import DiscordView from './components/DiscordView.svelte';
 	import ErrorView from './components/ErrorView.svelte';
-	import { defaultText } from './constants/defaultText';
 
 	import 'codemirror/lib/codemirror.css';
 	import 'codemirror/addon/display/placeholder.js';
 	import 'codemirror/theme/dracula.css';
 
-	// import 'codemirror/mode/markdown/markdown';
-
 	import 'codemirror/addon/edit/closebrackets';
 	import 'codemirror/addon/edit/matchbrackets';
 	import 'codemirror/addon/edit/trailingspace';
-	// import 'codemirror/addon/edit/continuelist';
+
 	import 'codemirror/addon/selection/active-line';
 
 	import './autoIndent';
 
 	import CodeMirror from 'codemirror';
 	import { onMount } from 'svelte';
-	// import Toolbar from './components/Toolbar.svelte';
 	import Toolbar from './components/toolbar/Toolbar.svelte';
-	import ScrollSync from 'scroll-sync'
+
 	
 	import autoformatText from './autoformat';  
 
-	// import { persist, localStorage } from '@macfja/svelte-persistent-store';
-	// import { writable } from 'svelte/store';
 	import { populateConstants } from './constants/discord';
 
-	import TempComponent from './components/TempComponent.svelte';
 	import { text } from './stores';
 
 	let editor;
-	// let text = defaultText;
-	// let text = persist(writable(defaultText), localStorage(), 'text');
 	let validText = $text;	//  bug: exiting last session with invalid text
 	let cursor = 0; 
 	let visibleText = validText;

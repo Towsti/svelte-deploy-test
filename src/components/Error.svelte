@@ -1,11 +1,8 @@
 <script>
-    import { slide } from 'svelte/transition';
-
     export let error;
 
     function formatErrorLine(line) {
         return line[0] === line[1] ? `line: ${line[0]}` : `lines: ${line.join('-')}`;
-        // return line[0] === line[1] ? line[0] : line.join('-');
     }
 
     function formatErrorEmoji(errorType) {
@@ -25,29 +22,14 @@
     }
 </script>
 
-<!-- todo: individual line, type, text variable -->
-<!-- {@html formatErrorEmoji(error.type)} {formatErrorLine(error.line)} - {error.text}<br> -->
-<!-- <div transition:slide|local> -->
 <tr>
-    <!-- <td>{@html formatErrorEmoji(error.type)}</td>
-    <td>{formatErrorLine(error.line)}</td>
-    <td>{error.text}</td> -->
     <td>{formatErrorLine(error.line)}</td>
     <td>{@html formatErrorEmoji(error.type)} {error.text}</td>
 </tr>
-<!-- </div> -->
 
 <style>
     td {
-        /* color: #EEFFFF; */
-        /* color: hsla(0, 0%, 100%, .7); */
-        /* color: #d0d8dd; */
-        /* font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif; */
-        /* font-family: Menlo, Consolas, Monaco, monospace; */
         font-size: 14px;
-
         color: #f8f8f2;
-        /* font-family: monospace; */
-        /* font-family: Consolas, Menlo, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif; */
     }
 </style>
