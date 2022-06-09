@@ -77,17 +77,6 @@ function getCursorFromIndex(text, index) {
     }
 }
 
-function reverse(str) {
-    /* Reverse a string.
-    INPUT: str = "hello world"
-    OUTPUT: "dlrow olleh" */
-    let reversed = "";
-    for (let i = str.length - 1; i >= 0; i--) {
-        reversed += str[i];
-    }
-    return reversed;
-}
-
 export default function autoformatText(cm) {
     // ordered so that there are no false results (not mandatory but faster)
     formatArrows(cm);

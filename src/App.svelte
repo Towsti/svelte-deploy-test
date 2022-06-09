@@ -18,7 +18,7 @@
 	import { onMount } from 'svelte';
 	import Toolbar from './components/toolbar/Toolbar.svelte';
 
-	
+	import { updateStyleFormat, updateSingleLineStyleFormat } from './styleFormat';
 	import autoformatText from './autoformat';  
 
 	import { populateConstants } from './constants/discord';
@@ -87,215 +87,38 @@
 		visibleText = getVisibleText(validText);
 	}
 
-	function selectionRangeFixedStartEnd() {
-		const selectionRange = editor.listSelections()[0];
-		let selection = Object();
-
-		if ((selectionRange.anchor.line < selectionRange.head.line) || 
-			(selectionRange.anchor.ch <= selectionRange.head.ch)) {
-			selection.start = selectionRange.anchor;
-			selection.end = selectionRange.head;
-		}
-		else {
-			selection.start = selectionRange.head;
-			selection.end = selectionRange.anchor;
-		}
-		// console.log(`start: (${selection.start.line}, ${selection.start.ch}), end: (${selection.end.line}, ${selection.end.ch})`);
-		return selection;
+	function updateInlineFormat(textBeforeSelection, textAfterSelection){
+		updateStyleFormat(editor, textBeforeSelection, textAfterSelection);
+		editor.focus();
 	}
 
-	function includeBeforeAfterText(fixedSelectionRange, lengthBefore, lengthAfter) {
-		return editor.getRange(
-			{
-				line: fixedSelectionRange.start.line,
-				ch: fixedSelectionRange.start.ch - lengthBefore
-			},
-			{
-				line: fixedSelectionRange.end.line,
-				ch: fixedSelectionRange.end.ch + lengthAfter
-			}
-		);
-	}
-
-	function isMultiLineSelection(fixedSelectionRange) {
-		return fixedSelectionRange.end.line > fixedSelectionRange.start.line;
-	}
-
-	function insideItalicFormatting(fixedSelectionRange, lengthBefore, lengthAfter) {
-		// workaround for *italic* and **bold**
-		// avoids that when you bold "**highlight**" then italic, that it will remove italic "*highlight*"
-		const selection = editor.getRange(
-			{
-				line: fixedSelectionRange.start.line,
-				ch: fixedSelectionRange.start.ch - 3
-			},
-			{
-				line: fixedSelectionRange.end.line,
-				ch: fixedSelectionRange.end.ch
-			}
-		);
-		// const endFormatting = selection.substring(selection.length - 3);
-		// return endFormatting.startsWith('***') || (!endFormatting.startsWith('**') && endFormatting.startsWith('*'));
-		if (selection.startsWith('***'))
-			return true;
-		
-		if (selection.startsWith('**') || selection.startsWith('**', 1))
-			return false;
-		
-		if (selection.startsWith('*') || selection.startsWith('*', 1) || selection.startsWith('*', 2))
-			return true;
-		
-		return false;
-	}
-
-	function insideFormatting(fixedSelectionRange, formattingBefore, formattingAfter) {
-		const lengthBefore = formattingBefore.length;
-		const lengthAfter = formattingAfter.length;
-		if (formattingBefore === '*') 
-			return insideItalicFormatting(fixedSelectionRange, lengthBefore, lengthAfter);
-	
-		const containedText = includeBeforeAfterText(fixedSelectionRange, lengthBefore, lengthAfter);
-		return containedText.startsWith(formattingBefore) && containedText.endsWith(formattingAfter);
-	}
-
-	function updateStyleFormat(textBeforeSelection, textAfterSelection){
-		const selectionRange = selectionRangeFixedStartEnd();
-		const selection = editor.getSelection();
-
-		const lengthBefore = textBeforeSelection.length;
-		const lengthAfter = textAfterSelection.length;
-		if (insideFormatting(selectionRange, textBeforeSelection, textAfterSelection)) {
-			// remove formatting
-			editor.replaceRange(
-				selection,
-				{
-					line: selectionRange.start.line,
-					ch: selectionRange.start.ch - lengthBefore
-				},
-				{
-					line: selectionRange.end.line,
-					ch: selectionRange.end.ch + lengthAfter
-				}
-			);
-		
-			editor.setSelection(
-				{
-					line: selectionRange.start.line,
-					ch: selectionRange.start.ch - lengthBefore
-				},
-				{
-					line: selectionRange.end.line,
-					ch: selectionRange.end.ch - (isMultiLineSelection(selectionRange) ? 0 : lengthBefore)
-				}
-			);
-		}
-		else {
-			// add formatting
-			editor.replaceSelection(textBeforeSelection + selection + textAfterSelection, selection);
-
-			editor.setSelection(
-				{
-					line: selectionRange.start.line,
-					ch: selectionRange.start.ch + lengthBefore
-				},
-				{
-					line: selectionRange.end.line,
-					ch: selectionRange.end.ch + (isMultiLineSelection(selectionRange) ? 0 : lengthBefore)
-				}
-			);
-		}
+	function updateLineFormat(lineStartText, lineEndText='') {
+		updateSingleLineStyleFormat(editor, lineStartText, lineEndText);
 		editor.focus();
 	}
 
 	function bold() {
-		updateStyleFormat('**', '**');
+		updateInlineFormat('**', '**');
 	}
 
 	function italic() {
-		updateStyleFormat('*', '*');
+		updateInlineFormat('*', '*');
 	}
 
 	function underline() {
-		updateStyleFormat('__', '__');
+		updateInlineFormat('__', '__');
 	}
 
 	function strikethrough() {
-		updateStyleFormat('~~', '~~');
-	}
-
-	function updateSingleLineStyleFormat(lineStartText, lineEndText='') {
-		const selection = selectionRangeFixedStartEnd();
-		const selectedLineText = editor.getLine(selection.start.line);
-		const lengthStartText = lineStartText.length;
-		const lengthEndText = lineEndText.length;
-
-		if (selectedLineText.startsWith(lineStartText) && selectedLineText.endsWith(lineEndText)) {
-			editor.replaceRange(selectedLineText.substring(lengthStartText, selectedLineText.length - lengthEndText), 
-				{
-					line: selection.start.line, 
-					ch: 0
-				}, 
-				{
-					line: selection.start.line, 
-					ch: selectedLineText.length
-				}
-			);
-		}
-		else {
-			editor.replaceRange(lineStartText + selectedLineText + lineEndText, 
-				{
-					line: selection.start.line, 
-					ch: 0
-				},
-				{
-					line: selection.start.line, 
-					ch: selectedLineText.length
-				}
-			);
-			
-			// if (selectedLineText === '') {
-				// don't place the cursor at the end of the line when changing a single line
-			editor.setSelection({
-				line: selection.start.line,
-				ch: selectedLineText.length + lengthStartText + (selectedLineText === '' ? 0 : lengthEndText)
-			});
-			// }
-		}
-		editor.focus();
+		updateInlineFormat('~~', '~~');
 	}
 
 	function h1() {
-		updateSingleLineStyleFormat('> __**', '**__');	
+		updateLineFormat('> __**', '**__');	
 	}
 
 	function h2() {
-		updateSingleLineStyleFormat('__**', '**__');
-	}
-
-	function inlineCode() {
-		updateStyleFormat('\`', '\`');
-	}
-
-	function codeBlock() {
-		updateStyleFormat('\`\`\`', '\`\`\`');
-	}
-
-	function unorderedList() {
-		updateSingleLineStyleFormat('⬥ ');	
-	}
-
-	function orderedList() {
-		// const selection = selectionRangeFixedStartEnd();
-		// const selectedLineText = editor.getLine(selection.start.line);
-		// if (selectedLineText.startsWith("1. ")) {
-		// 	editor.replaceRange(selectedLineText.substring("1. ".length), {line: selection.start.line, ch: 0}, {line: selection.start.line, ch: selectedLineText.length});
-		// }
-		// else {
-		// 	editor.replaceRange('1. ', {line: selection.start.line, ch: 0});
-
-		// }
-		// editor.focus();
-		updateSingleLineStyleFormat('1. ');	
+		updateLineFormat('__**', '**__');
 	}
 
 	function setCursor(e) {
@@ -371,7 +194,6 @@
 
 	function viewportChanger(cm) {
 		visibleText = getVisibleText(validText);
-		// $text = visibleText;
 	}
 
 	function debug() {
@@ -389,8 +211,6 @@
 	}
 
 	function command(event) {
-		// console.log();
-		console.log(`selected: ${event.detail.command}`);
 		editor.replaceSelection(event.detail.command);
 		editor.focus();
 	}
@@ -407,10 +227,10 @@
 				on:strikethrough={strikethrough}
 				on:h1={h1} 
 				on:h2={h2}
-				on:unorderedList={unorderedList} 
-				on:orderedList={orderedList} 
-				on:inlineCode={inlineCode} 
-				on:codeBlock={codeBlock} 
+				on:unorderedList={() => updateLineFormat('⬥ ')} 
+				on:orderedList={() => updateLineFormat('1. ')} 
+				on:inlineCode={() => updateInlineFormat('\`', '\`')} 
+				on:codeBlock={() => updateInlineFormat('\`\`\`', '\`\`\`')} 
 				on:debug={debug}
 				on:command={command}
 			/>

@@ -92146,6 +92146,164 @@ ${fields.join(',\n')}
     	}
     }
 
+    function selectionRangeFixedStartEnd(cm) {
+        const selectionRange = cm.listSelections()[0];
+        let selection = Object();
+
+        if ((selectionRange.anchor.line < selectionRange.head.line) || 
+            (selectionRange.anchor.ch <= selectionRange.head.ch)) {
+            selection.start = selectionRange.anchor;
+            selection.end = selectionRange.head;
+        }
+        else {
+            selection.start = selectionRange.head;
+            selection.end = selectionRange.anchor;
+        }
+        // console.log(`start: (${selection.start.line}, ${selection.start.ch}), end: (${selection.end.line}, ${selection.end.ch})`);
+        return selection;
+    }
+
+    function includeBeforeAfterText(cm, fixedSelectionRange, lengthBefore, lengthAfter) {
+        return cm.getRange(
+            {
+                line: fixedSelectionRange.start.line,
+                ch: fixedSelectionRange.start.ch - lengthBefore
+            },
+            {
+                line: fixedSelectionRange.end.line,
+                ch: fixedSelectionRange.end.ch + lengthAfter
+            }
+        );
+    }
+
+    function isMultiLineSelection(fixedSelectionRange) {
+        return fixedSelectionRange.end.line > fixedSelectionRange.start.line;
+    }
+
+    function insideItalicFormatting(cm, fixedSelectionRange) {
+        // workaround for *italic* and **bold**
+        // avoids that when you bold "**highlight**" then italic, that it will remove italic "*highlight*"
+        const selection = cm.getRange(
+            {
+                line: fixedSelectionRange.start.line,
+                ch: fixedSelectionRange.start.ch - 3
+            },
+            {
+                line: fixedSelectionRange.end.line,
+                ch: fixedSelectionRange.end.ch
+            }
+        );
+        // const endFormatting = selection.substring(selection.length - 3);
+        // return endFormatting.startsWith('***') || (!endFormatting.startsWith('**') && endFormatting.startsWith('*'));
+        if (selection.startsWith('***'))
+            return true;
+        
+        if (selection.startsWith('**') || selection.startsWith('**', 1))
+            return false;
+        
+        if (selection.startsWith('*') || selection.startsWith('*', 1) || selection.startsWith('*', 2))
+            return true;
+        
+        return false;
+    }
+
+    function insideFormatting(cm, fixedSelectionRange, formattingBefore, formattingAfter) {
+        const lengthBefore = formattingBefore.length;
+        const lengthAfter = formattingAfter.length;
+        if (formattingBefore === '*') 
+            return insideItalicFormatting(cm, fixedSelectionRange);
+
+        const containedText = includeBeforeAfterText(cm, fixedSelectionRange, lengthBefore, lengthAfter);
+        return containedText.startsWith(formattingBefore) && containedText.endsWith(formattingAfter);
+    }
+
+    function updateStyleFormat(cm, textBeforeSelection, textAfterSelection){
+        const selectionRange = selectionRangeFixedStartEnd(cm);
+        const selection = cm.getSelection();
+
+        const lengthBefore = textBeforeSelection.length;
+        const lengthAfter = textAfterSelection.length;
+        if (insideFormatting(cm, selectionRange, textBeforeSelection, textAfterSelection)) {
+            // remove formatting
+            cm.replaceRange(
+                selection,
+                {
+                    line: selectionRange.start.line,
+                    ch: selectionRange.start.ch - lengthBefore
+                },
+                {
+                    line: selectionRange.end.line,
+                    ch: selectionRange.end.ch + lengthAfter
+                }
+            );
+        
+            cm.setSelection(
+                {
+                    line: selectionRange.start.line,
+                    ch: selectionRange.start.ch - lengthBefore
+                },
+                {
+                    line: selectionRange.end.line,
+                    ch: selectionRange.end.ch - (isMultiLineSelection(selectionRange) ? 0 : lengthBefore)
+                }
+            );
+        }
+        else {
+            // add formatting
+            cm.replaceSelection(textBeforeSelection + selection + textAfterSelection, selection);
+
+            cm.setSelection(
+                {
+                    line: selectionRange.start.line,
+                    ch: selectionRange.start.ch + lengthBefore
+                },
+                {
+                    line: selectionRange.end.line,
+                    ch: selectionRange.end.ch + (isMultiLineSelection(selectionRange) ? 0 : lengthBefore)
+                }
+            );
+        }
+    }
+
+    function updateSingleLineStyleFormat(cm, lineStartText, lineEndText='') {
+        const selection = selectionRangeFixedStartEnd(cm);
+        const selectedLineText = cm.getLine(selection.start.line);
+        const lengthStartText = lineStartText.length;
+        const lengthEndText = lineEndText.length;
+
+        if (selectedLineText.startsWith(lineStartText) && selectedLineText.endsWith(lineEndText)) {
+            cm.replaceRange(selectedLineText.substring(lengthStartText, selectedLineText.length - lengthEndText), 
+                {
+                    line: selection.start.line, 
+                    ch: 0
+                }, 
+                {
+                    line: selection.start.line, 
+                    ch: selectedLineText.length
+                }
+            );
+        }
+        else {
+            cm.replaceRange(lineStartText + selectedLineText + lineEndText, 
+                {
+                    line: selection.start.line, 
+                    ch: 0
+                },
+                {
+                    line: selection.start.line, 
+                    ch: selectedLineText.length
+                }
+            );
+            
+            
+            // don't place the cursor at the end of the line when changing a single line
+            cm.setSelection({
+                line: selection.start.line,
+                ch: selectedLineText.length + lengthStartText + (selectedLineText === '' ? 0 : lengthEndText)
+            });
+        }
+    }
+
     function formatEmojis(cm) {
         /* Format named emojis (or aliases) to emoji ID's. 
         INPUT: "text ;gbarge; more text ;greaterbarge;" 
@@ -92232,13 +92390,13 @@ ${fields.join(',\n')}
 
     /* src\App.svelte generated by Svelte v3.48.0 */
 
-    const { Object: Object_1, console: console_1 } = globals;
+    const { console: console_1 } = globals;
     const file = "src\\App.svelte";
 
-    // (434:5) {:catch error}
+    // (254:5) {:catch error}
     function create_catch_block(ctx) {
     	let p;
-    	let t_value = /*error*/ ctx[29].message + "";
+    	let t_value = /*error*/ ctx[25].message + "";
     	let t;
 
     	const block = {
@@ -92246,7 +92404,7 @@ ${fields.join(',\n')}
     			p = element("p");
     			t = text$1(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file, 434, 6, 12654);
+    			add_location(p, file, 254, 6, 7200);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -92264,14 +92422,14 @@ ${fields.join(',\n')}
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(434:5) {:catch error}",
+    		source: "(254:5) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (431:5) {:then}
+    // (251:5) {:then}
     function create_then_block(ctx) {
     	let discordview;
     	let current;
@@ -92312,14 +92470,14 @@ ${fields.join(',\n')}
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(431:5) {:then}",
+    		source: "(251:5) {:then}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (427:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}
+    // (247:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}
     function create_pending_block(ctx) {
     	let div;
     	let p;
@@ -92329,9 +92487,9 @@ ${fields.join(',\n')}
     			div = element("div");
     			p = element("p");
     			p.textContent = "Waiting for channels, users, and prices to load...";
-    			add_location(p, file, 428, 7, 12436);
+    			add_location(p, file, 248, 7, 6982);
     			attr_dev(div, "class", "w-1/2 bg-slate-50 flex-grow");
-    			add_location(div, file, 427, 6, 12386);
+    			add_location(div, file, 247, 6, 6932);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -92349,7 +92507,7 @@ ${fields.join(',\n')}
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(427:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}",
+    		source: "(247:33)         <div class='w-1/2 bg-slate-50 flex-grow'>         <p>Waiting for channels, users, and prices to load...</p>        </div>       {:then}",
     		ctx
     	});
 
@@ -92370,18 +92528,18 @@ ${fields.join(',\n')}
     	let div1;
     	let current;
     	toolbar = new Toolbar({ $$inline: true });
-    	toolbar.$on("bold", /*bold*/ ctx[3]);
-    	toolbar.$on("italic", /*italic*/ ctx[4]);
-    	toolbar.$on("underline", /*underline*/ ctx[5]);
-    	toolbar.$on("strikethrough", /*strikethrough*/ ctx[6]);
-    	toolbar.$on("h1", /*h1*/ ctx[7]);
-    	toolbar.$on("h2", /*h2*/ ctx[8]);
-    	toolbar.$on("unorderedList", /*unorderedList*/ ctx[11]);
-    	toolbar.$on("orderedList", /*orderedList*/ ctx[12]);
-    	toolbar.$on("inlineCode", /*inlineCode*/ ctx[9]);
-    	toolbar.$on("codeBlock", /*codeBlock*/ ctx[10]);
-    	toolbar.$on("debug", /*debug*/ ctx[13]);
-    	toolbar.$on("command", /*command*/ ctx[14]);
+    	toolbar.$on("bold", /*bold*/ ctx[5]);
+    	toolbar.$on("italic", /*italic*/ ctx[6]);
+    	toolbar.$on("underline", /*underline*/ ctx[7]);
+    	toolbar.$on("strikethrough", /*strikethrough*/ ctx[8]);
+    	toolbar.$on("h1", /*h1*/ ctx[9]);
+    	toolbar.$on("h2", /*h2*/ ctx[10]);
+    	toolbar.$on("unorderedList", /*unorderedList_handler*/ ctx[13]);
+    	toolbar.$on("orderedList", /*orderedList_handler*/ ctx[14]);
+    	toolbar.$on("inlineCode", /*inlineCode_handler*/ ctx[15]);
+    	toolbar.$on("codeBlock", /*codeBlock_handler*/ ctx[16]);
+    	toolbar.$on("debug", /*debug*/ ctx[11]);
+    	toolbar.$on("command", /*command*/ ctx[12]);
 
     	errorview = new ErrorView({
     			props: { text: /*$text*/ ctx[1] },
@@ -92398,7 +92556,7 @@ ${fields.join(',\n')}
     		pending: create_pending_block,
     		then: create_then_block,
     		catch: create_catch_block,
-    		error: 29,
+    		error: 25,
     		blocks: [,,,]
     	};
 
@@ -92420,16 +92578,16 @@ ${fields.join(',\n')}
     			info.block.c();
     			attr_dev(textarea, "id", "input");
     			attr_dev(textarea, "placeholder", "Click ❔ for tips on autoformatting...");
-    			add_location(textarea, file, 422, 5, 12126);
+    			add_location(textarea, file, 242, 5, 6672);
     			attr_dev(div0, "class", "w-1/2 ml-4 mr-2 mb-4 flex flex-col");
-    			add_location(div0, file, 420, 4, 11925);
+    			add_location(div0, file, 240, 4, 6471);
     			attr_dev(div1, "class", "w-1/2 mr-4 ml-2 mb-4 overflow-auto");
-    			add_location(div1, file, 425, 4, 12295);
+    			add_location(div1, file, 245, 4, 6841);
     			attr_dev(div2, "class", "flex-grow flex flex-row overflow-auto");
-    			add_location(div2, file, 419, 3, 11868);
+    			add_location(div2, file, 239, 3, 6414);
     			attr_dev(div3, "class", "flex flex-col h-screen bg-indigo-400");
-    			add_location(div3, file, 399, 1, 11256);
-    			add_location(main, file, 398, 0, 11247);
+    			add_location(div3, file, 219, 1, 5708);
+    			add_location(main, file, 218, 0, 5699);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -92497,10 +92655,6 @@ ${fields.join(',\n')}
     	return block;
     }
 
-    function isMultiLineSelection(fixedSelectionRange) {
-    	return fixedSelectionRange.end.line > fixedSelectionRange.start.line;
-    }
-
     function instance($$self, $$props, $$invalidate) {
     	let $text;
     	validate_store(text, 'text');
@@ -92566,190 +92720,38 @@ ${fields.join(',\n')}
     		visibleText = getVisibleText(validText);
     	}
 
-    	function selectionRangeFixedStartEnd() {
-    		const selectionRange = editor.listSelections()[0];
-    		let selection = Object();
-
-    		if (selectionRange.anchor.line < selectionRange.head.line || selectionRange.anchor.ch <= selectionRange.head.ch) {
-    			selection.start = selectionRange.anchor;
-    			selection.end = selectionRange.head;
-    		} else {
-    			selection.start = selectionRange.head;
-    			selection.end = selectionRange.anchor;
-    		}
-
-    		// console.log(`start: (${selection.start.line}, ${selection.start.ch}), end: (${selection.end.line}, ${selection.end.ch})`);
-    		return selection;
+    	function updateInlineFormat(textBeforeSelection, textAfterSelection) {
+    		updateStyleFormat(editor, textBeforeSelection, textAfterSelection);
+    		editor.focus();
     	}
 
-    	function includeBeforeAfterText(fixedSelectionRange, lengthBefore, lengthAfter) {
-    		return editor.getRange(
-    			{
-    				line: fixedSelectionRange.start.line,
-    				ch: fixedSelectionRange.start.ch - lengthBefore
-    			},
-    			{
-    				line: fixedSelectionRange.end.line,
-    				ch: fixedSelectionRange.end.ch + lengthAfter
-    			}
-    		);
-    	}
-
-    	function insideItalicFormatting(fixedSelectionRange, lengthBefore, lengthAfter) {
-    		// workaround for *italic* and **bold**
-    		// avoids that when you bold "**highlight**" then italic, that it will remove italic "*highlight*"
-    		const selection = editor.getRange(
-    			{
-    				line: fixedSelectionRange.start.line,
-    				ch: fixedSelectionRange.start.ch - 3
-    			},
-    			{
-    				line: fixedSelectionRange.end.line,
-    				ch: fixedSelectionRange.end.ch
-    			}
-    		);
-
-    		// const endFormatting = selection.substring(selection.length - 3);
-    		// return endFormatting.startsWith('***') || (!endFormatting.startsWith('**') && endFormatting.startsWith('*'));
-    		if (selection.startsWith('***')) return true;
-
-    		if (selection.startsWith('**') || selection.startsWith('**', 1)) return false;
-    		if (selection.startsWith('*') || selection.startsWith('*', 1) || selection.startsWith('*', 2)) return true;
-    		return false;
-    	}
-
-    	function insideFormatting(fixedSelectionRange, formattingBefore, formattingAfter) {
-    		const lengthBefore = formattingBefore.length;
-    		const lengthAfter = formattingAfter.length;
-    		if (formattingBefore === '*') return insideItalicFormatting(fixedSelectionRange);
-    		const containedText = includeBeforeAfterText(fixedSelectionRange, lengthBefore, lengthAfter);
-    		return containedText.startsWith(formattingBefore) && containedText.endsWith(formattingAfter);
-    	}
-
-    	function updateStyleFormat(textBeforeSelection, textAfterSelection) {
-    		const selectionRange = selectionRangeFixedStartEnd();
-    		const selection = editor.getSelection();
-    		const lengthBefore = textBeforeSelection.length;
-    		const lengthAfter = textAfterSelection.length;
-
-    		if (insideFormatting(selectionRange, textBeforeSelection, textAfterSelection)) {
-    			// remove formatting
-    			editor.replaceRange(
-    				selection,
-    				{
-    					line: selectionRange.start.line,
-    					ch: selectionRange.start.ch - lengthBefore
-    				},
-    				{
-    					line: selectionRange.end.line,
-    					ch: selectionRange.end.ch + lengthAfter
-    				}
-    			);
-
-    			editor.setSelection(
-    				{
-    					line: selectionRange.start.line,
-    					ch: selectionRange.start.ch - lengthBefore
-    				},
-    				{
-    					line: selectionRange.end.line,
-    					ch: selectionRange.end.ch - (isMultiLineSelection(selectionRange) ? 0 : lengthBefore)
-    				}
-    			);
-    		} else {
-    			// add formatting
-    			editor.replaceSelection(textBeforeSelection + selection + textAfterSelection, selection);
-
-    			editor.setSelection(
-    				{
-    					line: selectionRange.start.line,
-    					ch: selectionRange.start.ch + lengthBefore
-    				},
-    				{
-    					line: selectionRange.end.line,
-    					ch: selectionRange.end.ch + (isMultiLineSelection(selectionRange) ? 0 : lengthBefore)
-    				}
-    			);
-    		}
-
+    	function updateLineFormat(lineStartText, lineEndText = '') {
+    		updateSingleLineStyleFormat(editor, lineStartText, lineEndText);
     		editor.focus();
     	}
 
     	function bold() {
-    		updateStyleFormat('**', '**');
+    		updateInlineFormat('**', '**');
     	}
 
     	function italic() {
-    		updateStyleFormat('*', '*');
+    		updateInlineFormat('*', '*');
     	}
 
     	function underline() {
-    		updateStyleFormat('__', '__');
+    		updateInlineFormat('__', '__');
     	}
 
     	function strikethrough() {
-    		updateStyleFormat('~~', '~~');
-    	}
-
-    	function updateSingleLineStyleFormat(lineStartText, lineEndText = '') {
-    		const selection = selectionRangeFixedStartEnd();
-    		const selectedLineText = editor.getLine(selection.start.line);
-    		const lengthStartText = lineStartText.length;
-    		const lengthEndText = lineEndText.length;
-
-    		if (selectedLineText.startsWith(lineStartText) && selectedLineText.endsWith(lineEndText)) {
-    			editor.replaceRange(selectedLineText.substring(lengthStartText, selectedLineText.length - lengthEndText), { line: selection.start.line, ch: 0 }, {
-    				line: selection.start.line,
-    				ch: selectedLineText.length
-    			});
-    		} else {
-    			editor.replaceRange(lineStartText + selectedLineText + lineEndText, { line: selection.start.line, ch: 0 }, {
-    				line: selection.start.line,
-    				ch: selectedLineText.length
-    			});
-
-    			// if (selectedLineText === '') {
-    			// don't place the cursor at the end of the line when changing a single line
-    			editor.setSelection({
-    				line: selection.start.line,
-    				ch: selectedLineText.length + lengthStartText + (selectedLineText === '' ? 0 : lengthEndText)
-    			});
-    		} // }
-
-    		editor.focus();
+    		updateInlineFormat('~~', '~~');
     	}
 
     	function h1() {
-    		updateSingleLineStyleFormat('> __**', '**__');
+    		updateLineFormat('> __**', '**__');
     	}
 
     	function h2() {
-    		updateSingleLineStyleFormat('__**', '**__');
-    	}
-
-    	function inlineCode() {
-    		updateStyleFormat('\`', '\`');
-    	}
-
-    	function codeBlock() {
-    		updateStyleFormat('\`\`\`', '\`\`\`');
-    	}
-
-    	function unorderedList() {
-    		updateSingleLineStyleFormat('⬥ ');
-    	}
-
-    	function orderedList() {
-    		// const selection = selectionRangeFixedStartEnd();
-    		// const selectedLineText = editor.getLine(selection.start.line);
-    		// if (selectedLineText.startsWith("1. ")) {
-    		// 	editor.replaceRange(selectedLineText.substring("1. ".length), {line: selection.start.line, ch: 0}, {line: selection.start.line, ch: selectedLineText.length});
-    		// }
-    		// else {
-    		// 	editor.replaceRange('1. ', {line: selection.start.line, ch: 0});
-    		// }
-    		// editor.focus();
-    		updateSingleLineStyleFormat('1. ');
+    		updateLineFormat('__**', '**__');
     	}
 
     	function setCursor(e) {
@@ -92831,7 +92833,7 @@ ${fields.join(',\n')}
 
     	function viewportChanger(cm) {
     		visibleText = getVisibleText(validText);
-    	} // $text = visibleText;
+    	}
 
     	function debug() {
     		console.log("debug");
@@ -92847,18 +92849,20 @@ ${fields.join(',\n')}
     	}
 
     	function command(event) {
-    		// console.log();
-    		console.log(`selected: ${event.detail.command}`);
-
     		editor.replaceSelection(event.detail.command);
     		editor.focus();
     	}
 
     	const writable_props = [];
 
-    	Object_1.keys($$props).forEach(key => {
+    	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console_1.warn(`<App> was created with unknown prop '${key}'`);
     	});
+
+    	const unorderedList_handler = () => updateLineFormat('⬥ ');
+    	const orderedList_handler = () => updateLineFormat('1. ');
+    	const inlineCode_handler = () => updateInlineFormat('\`', '\`');
+    	const codeBlock_handler = () => updateInlineFormat('\`\`\`', '\`\`\`');
 
     	$$self.$capture_state = () => ({
     		DiscordView,
@@ -92866,6 +92870,8 @@ ${fields.join(',\n')}
     		CodeMirror: codemirror,
     		onMount,
     		Toolbar,
+    		updateStyleFormat,
+    		updateSingleLineStyleFormat,
     		autoformatText,
     		populateConstants,
     		text,
@@ -92875,23 +92881,14 @@ ${fields.join(',\n')}
     		visibleText,
     		newInput,
     		validateText,
-    		selectionRangeFixedStartEnd,
-    		includeBeforeAfterText,
-    		isMultiLineSelection,
-    		insideItalicFormatting,
-    		insideFormatting,
-    		updateStyleFormat,
+    		updateInlineFormat,
+    		updateLineFormat,
     		bold,
     		italic,
     		underline,
     		strikethrough,
-    		updateSingleLineStyleFormat,
     		h1,
     		h2,
-    		inlineCode,
-    		codeBlock,
-    		unorderedList,
-    		orderedList,
     		setCursor,
     		getVisibleText,
     		updater,
@@ -92916,18 +92913,20 @@ ${fields.join(',\n')}
     		validText,
     		$text,
     		validateText,
+    		updateInlineFormat,
+    		updateLineFormat,
     		bold,
     		italic,
     		underline,
     		strikethrough,
     		h1,
     		h2,
-    		inlineCode,
-    		codeBlock,
-    		unorderedList,
-    		orderedList,
     		debug,
-    		command
+    		command,
+    		unorderedList_handler,
+    		orderedList_handler,
+    		inlineCode_handler,
+    		codeBlock_handler
     	];
     }
 
