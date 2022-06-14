@@ -12,7 +12,7 @@ export let usersFormat = {};
 export let rolesFormat = {};
 export let emojisFormat = {};
 
-export let styleGuide = '';
+export let styleGuide = ''; // doesn't fit here but it is what it is
 
 
 export async function populateConstants() {
@@ -22,7 +22,7 @@ export async function populateConstants() {
     await setUsers();
     await setPvmeSpreadsheet();
     await setEmojis();
-    await setStyleGuide();
+    await setStyleGuide();  
 }
 
 async function rawGithubGetRequest(url) {

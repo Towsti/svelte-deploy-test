@@ -19,6 +19,7 @@
     import CommandMenu from './CommandMenu.svelte';
     import Help from './Help.svelte';
     import Info from './Info.svelte';
+    import ToggleView from './ToggleView.svelte';
 
     const dispatch = createEventDispatcher();
 </script>
@@ -61,6 +62,7 @@
 
     <div class="inline-flex rounded-md shadow-sm mb-2 mx-2 ml-auto" role="group">
         <!-- <Button on:click={() => dispatch('debug')} corner={'rounded-l'}><QuestionCircle/></Button> -->
+        <ToggleView {dispatch}/>
         <Help></Help>
         <Info></Info>
     </div>

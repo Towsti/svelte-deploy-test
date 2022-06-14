@@ -29,6 +29,7 @@
 	let validText = $text;	//  bug: exiting last session with invalid text
 	let cursor = 0; 
 	let visibleText = validText;
+	let showView = true;
 
 	onMount(()=>{
 		// const ss = new ScrollSync({
@@ -218,44 +219,38 @@
 
 <main>
 	<div class='flex flex-col h-screen bg-indigo-400'>
-		<!-- <div class='flex flex-col h-screen bg-cyan-800'> -->
-		
-			<Toolbar
-				on:bold={bold} 
-				on:italic={italic} 
-				on:underline={underline} 
-				on:strikethrough={strikethrough}
-				on:h1={h1} 
-				on:h2={h2}
-				on:unorderedList={() => updateLineFormat('⬥ ')} 
-				on:orderedList={() => updateLineFormat('1. ')} 
-				on:inlineCode={() => updateInlineFormat('\`', '\`')} 
-				on:codeBlock={() => updateInlineFormat('\`\`\`', '\`\`\`')} 
-				on:debug={debug}
-				on:command={command}
-			/>
-
-			<!-- <Toolbar on:h1={h1} on:h2={h2} on:unorderedList={unorderedList} on:orderedList={orderedList} on:debug={debug}></Toolbar> -->
-
-			<div class='flex-grow flex flex-row overflow-auto'>
-				<div class='w-1/2 ml-4 mr-2 mb-4 flex flex-col'>
-					<!-- <textarea id="input" class=" scroll-container resize-none outline-none p-3 bg-slate-700 text-slate-50 text-clip">{text}</textarea> -->
-					<textarea id="input" placeholder="Click ❔ for tips on autoformatting..."></textarea>
-					<ErrorView text={$text} on:noCriticalErrors={validateText}/>
-				</div>
-				<div class='w-1/2 mr-4 ml-2 mb-4 overflow-auto'>
-					{#await populateConstants()}
-						<div class='w-1/2 bg-slate-50 flex-grow'>
-							<p>Waiting for channels, users, and prices to load...</p>
-						</div>
-					{:then}
-						<!-- <TempComponent text={validText}></TempComponent> -->
-						<DiscordView text={validText}/>
-					{:catch error}
-						<p style="color: red">{error.message}</p>
-					{/await}
-				</div>
+		<Toolbar
+			on:bold={bold} 
+			on:italic={italic} 
+			on:underline={underline} 
+			on:strikethrough={strikethrough}
+			on:h1={h1} 
+			on:h2={h2}
+			on:unorderedList={() => updateLineFormat('⬥ ')} 
+			on:orderedList={() => updateLineFormat('1. ')} 
+			on:inlineCode={() => updateInlineFormat('\`', '\`')} 
+			on:codeBlock={() => updateInlineFormat('\`\`\`', '\`\`\`')} 
+			on:debug={debug}
+			on:command={command}
+			on:toggleView={() => showView = !showView}
+		/>
+		<div class='flex-grow flex flex-row overflow-auto'>
+			<div class='w-1/2 ml-4 mr-2 mb-4 flex flex-col' class:w-full="{showView === false}" class:mr-4="{showView === false}">
+				<textarea id="input" placeholder="Click ❔ for tips on autoformatting..."></textarea>
+				<ErrorView text={$text} on:noCriticalErrors={validateText}/>
 			</div>
+			{#await populateConstants()}
+				<p class="ml-2">Waiting for channels, users, and prices to load...</p>	
+			{:then}
+				{#if showView}
+					<div class='w-1/2 mr-4 ml-2 mb-4 overflow-auto'>
+						<DiscordView text={validText}/>	
+					</div>
+				{/if}
+			{:catch error}
+					<p style="color: red">{error.message}</p>
+			{/await}
+		</div>
     </div>
 </main>
 
