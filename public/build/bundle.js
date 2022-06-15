@@ -84812,15 +84812,16 @@ var app = (function () {
 
     function create_fragment$e(ctx) {
     	let div;
+    	let div_class_value;
     	let current;
-    	const default_slot_template = /*#slots*/ ctx[1].default;
-    	const default_slot = create_slot(default_slot_template, ctx, /*$$scope*/ ctx[0], null);
+    	const default_slot_template = /*#slots*/ ctx[2].default;
+    	const default_slot = create_slot(default_slot_template, ctx, /*$$scope*/ ctx[1], null);
 
     	const block = {
     		c: function create() {
     			div = element("div");
     			if (default_slot) default_slot.c();
-    			attr_dev(div, "class", "inline-flex rounded-md shadow-sm mb-2 mx-2");
+    			attr_dev(div, "class", div_class_value = "inline-flex mb-2 mx-2 ml-" + (/*$$props*/ ctx[0].ml || 2));
     			attr_dev(div, "role", "group");
     			add_location(div, file$e, 0, 0, 0);
     		},
@@ -84838,18 +84839,22 @@ var app = (function () {
     		},
     		p: function update(ctx, [dirty]) {
     			if (default_slot) {
-    				if (default_slot.p && (!current || dirty & /*$$scope*/ 1)) {
+    				if (default_slot.p && (!current || dirty & /*$$scope*/ 2)) {
     					update_slot_base(
     						default_slot,
     						default_slot_template,
     						ctx,
-    						/*$$scope*/ ctx[0],
+    						/*$$scope*/ ctx[1],
     						!current
-    						? get_all_dirty_from_scope(/*$$scope*/ ctx[0])
-    						: get_slot_changes(default_slot_template, /*$$scope*/ ctx[0], dirty, null),
+    						? get_all_dirty_from_scope(/*$$scope*/ ctx[1])
+    						: get_slot_changes(default_slot_template, /*$$scope*/ ctx[1], dirty, null),
     						null
     					);
     				}
+    			}
+
+    			if (!current || dirty & /*$$props*/ 1 && div_class_value !== (div_class_value = "inline-flex mb-2 mx-2 ml-" + (/*$$props*/ ctx[0].ml || 2))) {
+    				attr_dev(div, "class", div_class_value);
     			}
     		},
     		i: function intro(local) {
@@ -84881,17 +84886,22 @@ var app = (function () {
     function instance$e($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('ButtonGroup', slots, ['default']);
-    	const writable_props = [];
 
-    	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<ButtonGroup> was created with unknown prop '${key}'`);
-    	});
-
-    	$$self.$$set = $$props => {
-    		if ('$$scope' in $$props) $$invalidate(0, $$scope = $$props.$$scope);
+    	$$self.$$set = $$new_props => {
+    		$$invalidate(0, $$props = assign(assign({}, $$props), exclude_internal_props($$new_props)));
+    		if ('$$scope' in $$new_props) $$invalidate(1, $$scope = $$new_props.$$scope);
     	};
 
-    	return [$$scope, slots];
+    	$$self.$inject_state = $$new_props => {
+    		$$invalidate(0, $$props = assign(assign({}, $$props), $$new_props));
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	$$props = exclude_internal_props($$props);
+    	return [$$props, $$scope, slots];
     }
 
     class ButtonGroup extends SvelteComponentDev {
@@ -89754,27 +89764,27 @@ ${fields.join(',\n')}
     			attr_dev(button1, "title", ".");
     			attr_dev(button1, "class", "rounded-t flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700");
     			attr_dev(button1, "type", "button");
-    			add_location(button1, file$9, 23, 4, 956);
+    			add_location(button1, file$9, 22, 4, 908);
     			attr_dev(button2, "title", ".img:url");
     			attr_dev(button2, "class", "flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700");
     			attr_dev(button2, "type", "button");
-    			add_location(button2, file$9, 26, 4, 1176);
+    			add_location(button2, file$9, 25, 4, 1128);
     			attr_dev(button3, "title", ".tag:word/delete");
     			attr_dev(button3, "class", "flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700");
     			attr_dev(button3, "type", "button");
-    			add_location(button3, file$9, 29, 4, 1404);
+    			add_location(button3, file$9, 28, 4, 1356);
     			attr_dev(button4, "title", ".embed:json");
     			attr_dev(button4, "class", "rounded-b mb-2 flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700");
     			attr_dev(button4, "type", "button");
-    			add_location(button4, file$9, 32, 4, 1641);
+    			add_location(button4, file$9, 31, 4, 1593);
     			attr_dev(button5, "title", "$linkmsg_tagword$");
     			attr_dev(button5, "class", "rounded-t flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700");
     			attr_dev(button5, "type", "button");
-    			add_location(button5, file$9, 36, 4, 1947);
+    			add_location(button5, file$9, 34, 4, 1848);
     			attr_dev(button6, "title", "$data_pvme:sheet!A1$");
     			attr_dev(button6, "class", "rounded-b flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700");
     			attr_dev(button6, "type", "button");
-    			add_location(button6, file$9, 39, 4, 2215);
+    			add_location(button6, file$9, 37, 4, 2116);
     			attr_dev(div0, "class", "m-4 flex-col inline-flex text-white text-left text-sm");
     			add_location(div0, file$9, 21, 2, 835);
     			attr_dev(div1, "id", "CommandOptions");
@@ -91532,8 +91542,8 @@ ${fields.join(',\n')}
     /* src\components\toolbar\Toolbar.svelte generated by Svelte v3.48.0 */
     const file$1 = "src\\components\\toolbar\\Toolbar.svelte";
 
-    // (30:8) <Button on:click={() => dispatch('bold')} title='Bold - Ctrl+B' corner={'rounded-l'} >
-    function create_default_slot_16(ctx) {
+    // (29:8) <Button on:click={() => dispatch('bold')} title='Bold - Ctrl+B' corner='rounded-l' >
+    function create_default_slot_17(ctx) {
     	let typebold;
     	let current;
     	typebold = new TypeBold$1({ $$inline: true });
@@ -91562,17 +91572,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_16.name,
+    		id: create_default_slot_17.name,
     		type: "slot",
-    		source: "(30:8) <Button on:click={() => dispatch('bold')} title='Bold - Ctrl+B' corner={'rounded-l'} >",
+    		source: "(29:8) <Button on:click={() => dispatch('bold')} title='Bold - Ctrl+B' corner='rounded-l' >",
     		ctx
     	});
 
     	return block;
     }
 
-    // (31:8) <Button on:click={() => dispatch('italic')} title='Italic - Ctrl+I'>
-    function create_default_slot_15(ctx) {
+    // (30:8) <Button on:click={() => dispatch('italic')} title='Italic - Ctrl+I'>
+    function create_default_slot_16(ctx) {
     	let typeitalic;
     	let current;
     	typeitalic = new TypeItalic$1({ $$inline: true });
@@ -91601,17 +91611,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_15.name,
+    		id: create_default_slot_16.name,
     		type: "slot",
-    		source: "(31:8) <Button on:click={() => dispatch('italic')} title='Italic - Ctrl+I'>",
+    		source: "(30:8) <Button on:click={() => dispatch('italic')} title='Italic - Ctrl+I'>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (32:8) <Button on:click={() => dispatch('underline')} title='Italic - Ctrl+U'>
-    function create_default_slot_14(ctx) {
+    // (31:8) <Button on:click={() => dispatch('underline')} title='Italic - Ctrl+U'>
+    function create_default_slot_15(ctx) {
     	let typeunderline;
     	let current;
     	typeunderline = new TypeUnderline$1({ $$inline: true });
@@ -91640,17 +91650,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_14.name,
+    		id: create_default_slot_15.name,
     		type: "slot",
-    		source: "(32:8) <Button on:click={() => dispatch('underline')} title='Italic - Ctrl+U'>",
+    		source: "(31:8) <Button on:click={() => dispatch('underline')} title='Italic - Ctrl+U'>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (33:8) <Button on:click={() => dispatch('strikethrough')} title='Strikethrough - Ctrl+Alt+S' corner={'rounded-r'}>
-    function create_default_slot_13(ctx) {
+    // (32:8) <Button on:click={() => dispatch('strikethrough')} title='Strikethrough - Ctrl+Alt+S' corner='rounded-r'>
+    function create_default_slot_14(ctx) {
     	let typestrikethrough;
     	let current;
     	typestrikethrough = new TypeStrikethrough$1({ $$inline: true });
@@ -91679,17 +91689,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_13.name,
+    		id: create_default_slot_14.name,
     		type: "slot",
-    		source: "(33:8) <Button on:click={() => dispatch('strikethrough')} title='Strikethrough - Ctrl+Alt+S' corner={'rounded-r'}>",
+    		source: "(32:8) <Button on:click={() => dispatch('strikethrough')} title='Strikethrough - Ctrl+Alt+S' corner='rounded-r'>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (29:4) <ButtonGroup>
-    function create_default_slot_12(ctx) {
+    // (28:4) <ButtonGroup>
+    function create_default_slot_13(ctx) {
     	let button0;
     	let t0;
     	let button1;
@@ -91702,8 +91712,8 @@ ${fields.join(',\n')}
     	button0 = new Button({
     			props: {
     				title: "Bold - Ctrl+B",
-    				corner: 'rounded-l',
-    				$$slots: { default: [create_default_slot_16] },
+    				corner: "rounded-l",
+    				$$slots: { default: [create_default_slot_17] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -91714,7 +91724,7 @@ ${fields.join(',\n')}
     	button1 = new Button({
     			props: {
     				title: "Italic - Ctrl+I",
-    				$$slots: { default: [create_default_slot_15] },
+    				$$slots: { default: [create_default_slot_16] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -91725,7 +91735,7 @@ ${fields.join(',\n')}
     	button2 = new Button({
     			props: {
     				title: "Italic - Ctrl+U",
-    				$$slots: { default: [create_default_slot_14] },
+    				$$slots: { default: [create_default_slot_15] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -91736,8 +91746,8 @@ ${fields.join(',\n')}
     	button3 = new Button({
     			props: {
     				title: "Strikethrough - Ctrl+Alt+S",
-    				corner: 'rounded-r',
-    				$$slots: { default: [create_default_slot_13] },
+    				corner: "rounded-r",
+    				$$slots: { default: [create_default_slot_14] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -91823,17 +91833,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_12.name,
+    		id: create_default_slot_13.name,
     		type: "slot",
-    		source: "(29:4) <ButtonGroup>",
+    		source: "(28:4) <ButtonGroup>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (36:8) <Button on:click={() => dispatch('h1')} title='Header 1 - Ctrl+Alt+1' corner={'rounded-l'}>
-    function create_default_slot_11(ctx) {
+    // (35:8) <Button on:click={() => dispatch('h1')} title='Header 1 - Ctrl+Alt+1' corner='rounded-l'>
+    function create_default_slot_12(ctx) {
     	let typeh1;
     	let current;
     	typeh1 = new TypeH1$1({ $$inline: true });
@@ -91862,17 +91872,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_11.name,
+    		id: create_default_slot_12.name,
     		type: "slot",
-    		source: "(36:8) <Button on:click={() => dispatch('h1')} title='Header 1 - Ctrl+Alt+1' corner={'rounded-l'}>",
+    		source: "(35:8) <Button on:click={() => dispatch('h1')} title='Header 1 - Ctrl+Alt+1' corner='rounded-l'>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (37:2) <Button on:click={() => dispatch('h2')} title='Header 2  - Ctrl+Alt+2' corner={'rounded-r'}>
-    function create_default_slot_10(ctx) {
+    // (36:2) <Button on:click={() => dispatch('h2')} title='Header 2  - Ctrl+Alt+2' corner='rounded-r'>
+    function create_default_slot_11(ctx) {
     	let typeh2;
     	let current;
     	typeh2 = new TypeH2$1({ $$inline: true });
@@ -91901,17 +91911,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_10.name,
+    		id: create_default_slot_11.name,
     		type: "slot",
-    		source: "(37:2) <Button on:click={() => dispatch('h2')} title='Header 2  - Ctrl+Alt+2' corner={'rounded-r'}>",
+    		source: "(36:2) <Button on:click={() => dispatch('h2')} title='Header 2  - Ctrl+Alt+2' corner='rounded-r'>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (35:4) <ButtonGroup>
-    function create_default_slot_9(ctx) {
+    // (34:4) <ButtonGroup>
+    function create_default_slot_10(ctx) {
     	let button0;
     	let t;
     	let button1;
@@ -91920,8 +91930,8 @@ ${fields.join(',\n')}
     	button0 = new Button({
     			props: {
     				title: "Header 1 - Ctrl+Alt+1",
-    				corner: 'rounded-l',
-    				$$slots: { default: [create_default_slot_11] },
+    				corner: "rounded-l",
+    				$$slots: { default: [create_default_slot_12] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -91932,8 +91942,8 @@ ${fields.join(',\n')}
     	button1 = new Button({
     			props: {
     				title: "Header 2  - Ctrl+Alt+2",
-    				corner: 'rounded-r',
-    				$$slots: { default: [create_default_slot_10] },
+    				corner: "rounded-r",
+    				$$slots: { default: [create_default_slot_11] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -91989,17 +91999,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_9.name,
+    		id: create_default_slot_10.name,
     		type: "slot",
-    		source: "(35:4) <ButtonGroup>",
+    		source: "(34:4) <ButtonGroup>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (41:8) <Button on:click={() => dispatch('unorderedList')} title='Unordered list' corner={'rounded-l'}>
-    function create_default_slot_8(ctx) {
+    // (40:8) <Button on:click={() => dispatch('unorderedList')} title='Unordered list' corner='rounded-l'>
+    function create_default_slot_9(ctx) {
     	let listul;
     	let current;
     	listul = new ListUl$1({ $$inline: true });
@@ -92028,17 +92038,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_8.name,
+    		id: create_default_slot_9.name,
     		type: "slot",
-    		source: "(41:8) <Button on:click={() => dispatch('unorderedList')} title='Unordered list' corner={'rounded-l'}>",
+    		source: "(40:8) <Button on:click={() => dispatch('unorderedList')} title='Unordered list' corner='rounded-l'>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (42:2) <Button on:click={() => dispatch('orderedList')} title='Ordered list' corner={'rounded-r'}>
-    function create_default_slot_7(ctx) {
+    // (41:2) <Button on:click={() => dispatch('orderedList')} title='Ordered list' corner='rounded-r'>
+    function create_default_slot_8(ctx) {
     	let listol;
     	let current;
     	listol = new ListOl$1({ $$inline: true });
@@ -92067,17 +92077,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_7.name,
+    		id: create_default_slot_8.name,
     		type: "slot",
-    		source: "(42:2) <Button on:click={() => dispatch('orderedList')} title='Ordered list' corner={'rounded-r'}>",
+    		source: "(41:2) <Button on:click={() => dispatch('orderedList')} title='Ordered list' corner='rounded-r'>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (40:4) <ButtonGroup>
-    function create_default_slot_6(ctx) {
+    // (39:4) <ButtonGroup>
+    function create_default_slot_7(ctx) {
     	let button0;
     	let t;
     	let button1;
@@ -92086,8 +92096,8 @@ ${fields.join(',\n')}
     	button0 = new Button({
     			props: {
     				title: "Unordered list",
-    				corner: 'rounded-l',
-    				$$slots: { default: [create_default_slot_8] },
+    				corner: "rounded-l",
+    				$$slots: { default: [create_default_slot_9] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92098,8 +92108,8 @@ ${fields.join(',\n')}
     	button1 = new Button({
     			props: {
     				title: "Ordered list",
-    				corner: 'rounded-r',
-    				$$slots: { default: [create_default_slot_7] },
+    				corner: "rounded-r",
+    				$$slots: { default: [create_default_slot_8] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92155,17 +92165,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_6.name,
+    		id: create_default_slot_7.name,
     		type: "slot",
-    		source: "(40:4) <ButtonGroup>",
+    		source: "(39:4) <ButtonGroup>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (46:8) <Button on:click={() => dispatch('inlineCode')} title='Inline Code' corner={'rounded-l'}>
-    function create_default_slot_5(ctx) {
+    // (45:8) <Button on:click={() => dispatch('inlineCode')} title='Inline Code' corner='rounded-l'>
+    function create_default_slot_6(ctx) {
     	let code;
     	let current;
     	code = new Code$1({ $$inline: true });
@@ -92194,17 +92204,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_5.name,
+    		id: create_default_slot_6.name,
     		type: "slot",
-    		source: "(46:8) <Button on:click={() => dispatch('inlineCode')} title='Inline Code' corner={'rounded-l'}>",
+    		source: "(45:8) <Button on:click={() => dispatch('inlineCode')} title='Inline Code' corner='rounded-l'>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (47:2) <Button on:click={() => dispatch('codeBlock')} title='Code block' corner={'rounded-r'}>
-    function create_default_slot_4(ctx) {
+    // (46:2) <Button on:click={() => dispatch('codeBlock')} title='Code block' corner='rounded-r'>
+    function create_default_slot_5(ctx) {
     	let codesquare;
     	let current;
     	codesquare = new CodeSquare$1({ $$inline: true });
@@ -92233,17 +92243,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_4.name,
+    		id: create_default_slot_5.name,
     		type: "slot",
-    		source: "(47:2) <Button on:click={() => dispatch('codeBlock')} title='Code block' corner={'rounded-r'}>",
+    		source: "(46:2) <Button on:click={() => dispatch('codeBlock')} title='Code block' corner='rounded-r'>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (45:4) <ButtonGroup>
-    function create_default_slot_3(ctx) {
+    // (44:4) <ButtonGroup>
+    function create_default_slot_4(ctx) {
     	let button0;
     	let t;
     	let button1;
@@ -92252,8 +92262,8 @@ ${fields.join(',\n')}
     	button0 = new Button({
     			props: {
     				title: "Inline Code",
-    				corner: 'rounded-l',
-    				$$slots: { default: [create_default_slot_5] },
+    				corner: "rounded-l",
+    				$$slots: { default: [create_default_slot_6] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92264,8 +92274,8 @@ ${fields.join(',\n')}
     	button1 = new Button({
     			props: {
     				title: "Code block",
-    				corner: 'rounded-r',
-    				$$slots: { default: [create_default_slot_4] },
+    				corner: "rounded-r",
+    				$$slots: { default: [create_default_slot_5] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92321,17 +92331,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_3.name,
+    		id: create_default_slot_4.name,
     		type: "slot",
-    		source: "(45:4) <ButtonGroup>",
+    		source: "(44:4) <ButtonGroup>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (50:4) <ButtonGroup>
-    function create_default_slot_2(ctx) {
+    // (49:4) <ButtonGroup>
+    function create_default_slot_3(ctx) {
     	let commandmenu;
     	let current;
 
@@ -92365,17 +92375,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_2.name,
+    		id: create_default_slot_3.name,
     		type: "slot",
-    		source: "(50:4) <ButtonGroup>",
+    		source: "(49:4) <ButtonGroup>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (54:4) <ButtonGroup>
-    function create_default_slot_1(ctx) {
+    // (53:4) <ButtonGroup>
+    function create_default_slot_2(ctx) {
     	let templatemenu;
     	let current;
     	templatemenu = new TemplateMenu({ $$inline: true });
@@ -92404,17 +92414,17 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_default_slot_1.name,
+    		id: create_default_slot_2.name,
     		type: "slot",
-    		source: "(54:4) <ButtonGroup>",
+    		source: "(53:4) <ButtonGroup>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (58:4) <ButtonGroup>
-    function create_default_slot(ctx) {
+    // (57:4) <ButtonGroup>
+    function create_default_slot_1(ctx) {
     	let tocdropdown;
     	let current;
     	tocdropdown = new ToCDropdown({ $$inline: true });
@@ -92443,9 +92453,76 @@ ${fields.join(',\n')}
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
+    		id: create_default_slot_1.name,
+    		type: "slot",
+    		source: "(57:4) <ButtonGroup>",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (61:4) <ButtonGroup ml='auto'>
+    function create_default_slot(ctx) {
+    	let toggleview;
+    	let t0;
+    	let help;
+    	let t1;
+    	let info;
+    	let current;
+
+    	toggleview = new ToggleView({
+    			props: { dispatch: /*dispatch*/ ctx[0] },
+    			$$inline: true
+    		});
+
+    	help = new Help({ $$inline: true });
+    	info = new Info({ $$inline: true });
+
+    	const block = {
+    		c: function create() {
+    			create_component(toggleview.$$.fragment);
+    			t0 = space();
+    			create_component(help.$$.fragment);
+    			t1 = space();
+    			create_component(info.$$.fragment);
+    		},
+    		m: function mount(target, anchor) {
+    			mount_component(toggleview, target, anchor);
+    			insert_dev(target, t0, anchor);
+    			mount_component(help, target, anchor);
+    			insert_dev(target, t1, anchor);
+    			mount_component(info, target, anchor);
+    			current = true;
+    		},
+    		p: noop,
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(toggleview.$$.fragment, local);
+    			transition_in(help.$$.fragment, local);
+    			transition_in(info.$$.fragment, local);
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			transition_out(toggleview.$$.fragment, local);
+    			transition_out(help.$$.fragment, local);
+    			transition_out(info.$$.fragment, local);
+    			current = false;
+    		},
+    		d: function destroy(detaching) {
+    			destroy_component(toggleview, detaching);
+    			if (detaching) detach_dev(t0);
+    			destroy_component(help, detaching);
+    			if (detaching) detach_dev(t1);
+    			destroy_component(info, detaching);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
     		id: create_default_slot.name,
     		type: "slot",
-    		source: "(58:4) <ButtonGroup>",
+    		source: "(61:4) <ButtonGroup ml='auto'>",
     		ctx
     	});
 
@@ -92453,7 +92530,7 @@ ${fields.join(',\n')}
     }
 
     function create_fragment$1(ctx) {
-    	let div1;
+    	let div;
     	let buttongroup0;
     	let t0;
     	let buttongroup1;
@@ -92468,17 +92545,12 @@ ${fields.join(',\n')}
     	let t5;
     	let buttongroup6;
     	let t6;
-    	let div0;
-    	let toggleview;
-    	let t7;
-    	let help;
-    	let t8;
-    	let info;
+    	let buttongroup7;
     	let current;
 
     	buttongroup0 = new ButtonGroup({
     			props: {
-    				$$slots: { default: [create_default_slot_12] },
+    				$$slots: { default: [create_default_slot_13] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92486,7 +92558,7 @@ ${fields.join(',\n')}
 
     	buttongroup1 = new ButtonGroup({
     			props: {
-    				$$slots: { default: [create_default_slot_9] },
+    				$$slots: { default: [create_default_slot_10] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92494,7 +92566,7 @@ ${fields.join(',\n')}
 
     	buttongroup2 = new ButtonGroup({
     			props: {
-    				$$slots: { default: [create_default_slot_6] },
+    				$$slots: { default: [create_default_slot_7] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92502,7 +92574,7 @@ ${fields.join(',\n')}
 
     	buttongroup3 = new ButtonGroup({
     			props: {
-    				$$slots: { default: [create_default_slot_3] },
+    				$$slots: { default: [create_default_slot_4] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92510,7 +92582,7 @@ ${fields.join(',\n')}
 
     	buttongroup4 = new ButtonGroup({
     			props: {
-    				$$slots: { default: [create_default_slot_2] },
+    				$$slots: { default: [create_default_slot_3] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92518,7 +92590,7 @@ ${fields.join(',\n')}
 
     	buttongroup5 = new ButtonGroup({
     			props: {
-    				$$slots: { default: [create_default_slot_1] },
+    				$$slots: { default: [create_default_slot_2] },
     				$$scope: { ctx }
     			},
     			$$inline: true
@@ -92526,23 +92598,24 @@ ${fields.join(',\n')}
 
     	buttongroup6 = new ButtonGroup({
     			props: {
+    				$$slots: { default: [create_default_slot_1] },
+    				$$scope: { ctx }
+    			},
+    			$$inline: true
+    		});
+
+    	buttongroup7 = new ButtonGroup({
+    			props: {
+    				ml: "auto",
     				$$slots: { default: [create_default_slot] },
     				$$scope: { ctx }
     			},
     			$$inline: true
     		});
 
-    	toggleview = new ToggleView({
-    			props: { dispatch: /*dispatch*/ ctx[0] },
-    			$$inline: true
-    		});
-
-    	help = new Help({ $$inline: true });
-    	info = new Info({ $$inline: true });
-
     	const block = {
     		c: function create() {
-    			div1 = element("div");
+    			div = element("div");
     			create_component(buttongroup0.$$.fragment);
     			t0 = space();
     			create_component(buttongroup1.$$.fragment);
@@ -92557,43 +92630,30 @@ ${fields.join(',\n')}
     			t5 = space();
     			create_component(buttongroup6.$$.fragment);
     			t6 = space();
-    			div0 = element("div");
-    			create_component(toggleview.$$.fragment);
-    			t7 = space();
-    			create_component(help.$$.fragment);
-    			t8 = space();
-    			create_component(info.$$.fragment);
-    			attr_dev(div0, "class", "inline-flex rounded-md shadow-sm mb-2 mx-2 ml-auto");
-    			attr_dev(div0, "role", "group");
-    			add_location(div0, file$1, 62, 4, 2846);
-    			attr_dev(div1, "class", "flex flex-wrap mt-4 mb-2 mx-2");
-    			add_location(div1, file$1, 27, 0, 1217);
+    			create_component(buttongroup7.$$.fragment);
+    			attr_dev(div, "class", "flex flex-wrap mt-4 mb-2 mx-2");
+    			add_location(div, file$1, 26, 0, 1150);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div1, anchor);
-    			mount_component(buttongroup0, div1, null);
-    			append_dev(div1, t0);
-    			mount_component(buttongroup1, div1, null);
-    			append_dev(div1, t1);
-    			mount_component(buttongroup2, div1, null);
-    			append_dev(div1, t2);
-    			mount_component(buttongroup3, div1, null);
-    			append_dev(div1, t3);
-    			mount_component(buttongroup4, div1, null);
-    			append_dev(div1, t4);
-    			mount_component(buttongroup5, div1, null);
-    			append_dev(div1, t5);
-    			mount_component(buttongroup6, div1, null);
-    			append_dev(div1, t6);
-    			append_dev(div1, div0);
-    			mount_component(toggleview, div0, null);
-    			append_dev(div0, t7);
-    			mount_component(help, div0, null);
-    			append_dev(div0, t8);
-    			mount_component(info, div0, null);
+    			insert_dev(target, div, anchor);
+    			mount_component(buttongroup0, div, null);
+    			append_dev(div, t0);
+    			mount_component(buttongroup1, div, null);
+    			append_dev(div, t1);
+    			mount_component(buttongroup2, div, null);
+    			append_dev(div, t2);
+    			mount_component(buttongroup3, div, null);
+    			append_dev(div, t3);
+    			mount_component(buttongroup4, div, null);
+    			append_dev(div, t4);
+    			mount_component(buttongroup5, div, null);
+    			append_dev(div, t5);
+    			mount_component(buttongroup6, div, null);
+    			append_dev(div, t6);
+    			mount_component(buttongroup7, div, null);
     			current = true;
     		},
     		p: function update(ctx, [dirty]) {
@@ -92646,6 +92706,13 @@ ${fields.join(',\n')}
     			}
 
     			buttongroup6.$set(buttongroup6_changes);
+    			const buttongroup7_changes = {};
+
+    			if (dirty & /*$$scope*/ 2048) {
+    				buttongroup7_changes.$$scope = { dirty, ctx };
+    			}
+
+    			buttongroup7.$set(buttongroup7_changes);
     		},
     		i: function intro(local) {
     			if (current) return;
@@ -92656,9 +92723,7 @@ ${fields.join(',\n')}
     			transition_in(buttongroup4.$$.fragment, local);
     			transition_in(buttongroup5.$$.fragment, local);
     			transition_in(buttongroup6.$$.fragment, local);
-    			transition_in(toggleview.$$.fragment, local);
-    			transition_in(help.$$.fragment, local);
-    			transition_in(info.$$.fragment, local);
+    			transition_in(buttongroup7.$$.fragment, local);
     			current = true;
     		},
     		o: function outro(local) {
@@ -92669,13 +92734,11 @@ ${fields.join(',\n')}
     			transition_out(buttongroup4.$$.fragment, local);
     			transition_out(buttongroup5.$$.fragment, local);
     			transition_out(buttongroup6.$$.fragment, local);
-    			transition_out(toggleview.$$.fragment, local);
-    			transition_out(help.$$.fragment, local);
-    			transition_out(info.$$.fragment, local);
+    			transition_out(buttongroup7.$$.fragment, local);
     			current = false;
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div1);
+    			if (detaching) detach_dev(div);
     			destroy_component(buttongroup0);
     			destroy_component(buttongroup1);
     			destroy_component(buttongroup2);
@@ -92683,9 +92746,7 @@ ${fields.join(',\n')}
     			destroy_component(buttongroup4);
     			destroy_component(buttongroup5);
     			destroy_component(buttongroup6);
-    			destroy_component(toggleview);
-    			destroy_component(help);
-    			destroy_component(info);
+    			destroy_component(buttongroup7);
     		}
     	};
 

@@ -24,27 +24,26 @@
     const dispatch = createEventDispatcher();
 </script>
 
-<!-- <div class="flex justify-left mt-4 mb-2 mx-2 flex-wrap"> -->
 <div class="flex flex-wrap mt-4 mb-2 mx-2">
     <ButtonGroup>
-        <Button on:click={() => dispatch('bold')} title='Bold - Ctrl+B' corner={'rounded-l'} ><TypeBold/></Button>
+        <Button on:click={() => dispatch('bold')} title='Bold - Ctrl+B' corner='rounded-l' ><TypeBold/></Button>
         <Button on:click={() => dispatch('italic')} title='Italic - Ctrl+I'><TypeItalic/></Button>
         <Button on:click={() => dispatch('underline')} title='Italic - Ctrl+U'><TypeUnderline/></Button>
-        <Button on:click={() => dispatch('strikethrough')} title='Strikethrough - Ctrl+Alt+S' corner={'rounded-r'}><TypeStrikethrough/></Button>
+        <Button on:click={() => dispatch('strikethrough')} title='Strikethrough - Ctrl+Alt+S' corner='rounded-r'><TypeStrikethrough/></Button>
     </ButtonGroup>
     <ButtonGroup>
-        <Button on:click={() => dispatch('h1')} title='Header 1 - Ctrl+Alt+1' corner={'rounded-l'}><TypeH1/></Button>
-		<Button on:click={() => dispatch('h2')} title='Header 2  - Ctrl+Alt+2' corner={'rounded-r'}><TypeH2/></Button>
-    </ButtonGroup>
-
-    <ButtonGroup>
-        <Button on:click={() => dispatch('unorderedList')} title='Unordered list' corner={'rounded-l'}><ListUl/></Button>
-		<Button on:click={() => dispatch('orderedList')} title='Ordered list' corner={'rounded-r'}><ListOl/></Button>
+        <Button on:click={() => dispatch('h1')} title='Header 1 - Ctrl+Alt+1' corner='rounded-l'><TypeH1/></Button>
+		<Button on:click={() => dispatch('h2')} title='Header 2  - Ctrl+Alt+2' corner='rounded-r'><TypeH2/></Button>
     </ButtonGroup>
 
     <ButtonGroup>
-        <Button on:click={() => dispatch('inlineCode')} title='Inline Code' corner={'rounded-l'}><Code/></Button>
-		<Button on:click={() => dispatch('codeBlock')} title='Code block' corner={'rounded-r'}><CodeSquare/></Button>
+        <Button on:click={() => dispatch('unorderedList')} title='Unordered list' corner='rounded-l'><ListUl/></Button>
+		<Button on:click={() => dispatch('orderedList')} title='Ordered list' corner='rounded-r'><ListOl/></Button>
+    </ButtonGroup>
+
+    <ButtonGroup>
+        <Button on:click={() => dispatch('inlineCode')} title='Inline Code' corner='rounded-l'><Code/></Button>
+		<Button on:click={() => dispatch('codeBlock')} title='Code block' corner='rounded-r'><CodeSquare/></Button>
     </ButtonGroup>
 
     <ButtonGroup>
@@ -59,11 +58,9 @@
         <ToCDropdown></ToCDropdown>
     </ButtonGroup>
     
-
-    <div class="inline-flex rounded-md shadow-sm mb-2 mx-2 ml-auto" role="group">
-        <!-- <Button on:click={() => dispatch('debug')} corner={'rounded-l'}><QuestionCircle/></Button> -->
+    <ButtonGroup ml='auto'>
         <ToggleView {dispatch}/>
         <Help></Help>
         <Info></Info>
-    </div>
+    </ButtonGroup>
 </div>

@@ -20,7 +20,6 @@
 
 <div id="CommandOptions" class="z-10 hidden rounded shadow bg-slate-700 border border-slate-800">
   <div class="m-4 flex-col inline-flex text-white text-left text-sm">
-    <!-- <p class="mb-2 font-bold">Bot</p> -->
     <button title="." on:click={() => selectCommand('.')} class='rounded-t flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700' type="button">
       .
     </button>
@@ -33,7 +32,6 @@
     <button title=".embed:json" on:click={() => selectCommand('.embed:json')} class='rounded-b mb-2 flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700' type="button">
       .embed:json
     </button>
-    <!-- <p class="my-2 font-bold">Github</p> -->
     <button title="$linkmsg_tagword$" on:click={() => selectCommand('$linkmsg_tagword$')} class='rounded-t flex-wrap text-left bg-indigo-600 hover:bg-indigo-700 p-2 active:bg-indigo-800 border border-indigo-700' type="button">
       $linkmsg_tagword$
     </button>
